@@ -33,7 +33,7 @@ public class MenuController {
 
     @PutMapping
     public Menu updateMenu(@RequestBody Menu menu) {
-        return null;
+        return service.update(menu);
     }
 
     @DeleteMapping("{id}")

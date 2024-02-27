@@ -35,7 +35,8 @@ public class MenuServiceImpl implements MenuService{
 
     @Override
     public Menu update(Menu menu) {
-        return null;
+        getById(menu.getId());
+        return repository.saveAndFlush(menu);
     }
 
     @Override
