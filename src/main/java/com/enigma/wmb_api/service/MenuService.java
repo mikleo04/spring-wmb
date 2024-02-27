@@ -10,6 +10,6 @@ public interface MenuService {
     List<Menu> getAll();
     Menu update(Menu menu);
     void delete(String id);
-    void updateStatus(String id);
+    void updateStatus(String id, Boolean status);
 
 }

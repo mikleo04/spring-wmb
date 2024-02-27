@@ -47,7 +47,8 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public void updateStatus(String id) {
-
+    public void updateStatus(String id, Boolean status) {
+        getById(id);
+        repository.updateStatus(id, status);
     }
 }

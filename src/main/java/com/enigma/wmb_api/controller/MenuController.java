@@ -44,7 +44,8 @@ public class MenuController {
 
     @PutMapping("{id}")
     public String updateStatusMenu(@PathVariable String id, @RequestParam(name = "status") Boolean status) {
-        return null;
+        service.updateStatus(id, status);
+        return "Success";
     }
 
 }
