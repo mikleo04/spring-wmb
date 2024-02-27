@@ -38,7 +38,8 @@ public class MenuController {
 
     @DeleteMapping("{id}")
     public String deleteMenu(@PathVariable String id) {
-        return null;
+        service.delete(id);
+        return "Success";
     }
 
     @PutMapping("{id}")

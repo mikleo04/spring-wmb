@@ -1,7 +1,8 @@
-package com.enigma.wmb_api.service;
+package com.enigma.wmb_api.service.impl;
 
 import com.enigma.wmb_api.entity.Menu;
 import com.enigma.wmb_api.repository.MenuRepository;
+import com.enigma.wmb_api.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class MenuServiceImpl implements MenuService{
+public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository repository;
 
@@ -41,7 +42,8 @@ public class MenuServiceImpl implements MenuService{
 
     @Override
     public void delete(String id) {
-
+        Menu menuSelected = getById(id);
+        repository.delete(menuSelected);
     }
 
     @Override
