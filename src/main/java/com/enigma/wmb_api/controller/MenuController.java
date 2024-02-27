@@ -28,7 +28,7 @@ public class MenuController {
 
     @GetMapping
     public List<Menu> getAllMenu() {
-        return null;
+        return service.getAll();
     }
 
     @PutMapping

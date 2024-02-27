@@ -30,7 +30,7 @@ public class MenuServiceImpl implements MenuService{
 
     @Override
     public List<Menu> getAll() {
-        return null;
+        return repository.findAll();
     }
 
     @Override
