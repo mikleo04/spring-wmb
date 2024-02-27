@@ -23,7 +23,7 @@ public class MenuController {
 
     @GetMapping("{id}")
     public Menu getMenuById(@PathVariable String id) {
-        return null;
+        return service.getById(id);
     }
 
     @GetMapping
