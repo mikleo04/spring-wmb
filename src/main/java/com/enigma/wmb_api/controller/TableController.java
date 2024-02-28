@@ -7,10 +7,7 @@ import com.enigma.wmb_api.service.TableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +29,20 @@ public class TableController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .body(response);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<CommonResponse<DiningTable>> getTableByid(@PathVariable String id) {
+        DiningTable tableResult = service.getById(id);
+        CommonResponse<DiningTable> response = CommonResponse.<DiningTable>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success get table")
+                .data(tableResult)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(response);
     }
 
