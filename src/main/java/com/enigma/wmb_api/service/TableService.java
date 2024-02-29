@@ -10,4 +10,5 @@ public interface TableService {
     DiningTable creat(DiningTable diningTable);
     DiningTable getById(String id);
     Page<DiningTable> getAll(SearchTableRequest request);
+    void delete(String id);
 }

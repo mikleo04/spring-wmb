@@ -45,4 +45,10 @@ public class TableServiceImpl implements TableService {
 
         return repository.findAll(pageable);
     }
+
+    @Override
+    public void delete(String id) {
+        DiningTable tableSelected = getById(id);
+        repository.delete(tableSelected);
+    }
 }

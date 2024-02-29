@@ -8,7 +8,6 @@ import com.enigma.wmb_api.entity.DiningTable;
 import com.enigma.wmb_api.service.TableService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -78,13 +77,22 @@ public class TableController {
 
         CommonResponse<List<DiningTable>> response = CommonResponse.<List<DiningTable>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Succes get tables")
+                .message("Success get tables")
                 .data(tablesResult.getContent())
                 .paging(pagingResponse)
                 .build();
 
         return ResponseEntity.ok(response);
+    }
 
+    @DeleteMapping("{id}")
+    public ResponseEntity<CommonResponse<String>> deleteTable(@PathVariable String id) {
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success delete table")
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
 }
