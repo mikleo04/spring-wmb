@@ -1,9 +1,14 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.dto.request.SearchMenuRequest;
 import com.enigma.wmb_api.entity.Menu;
 import com.enigma.wmb_api.repository.MenuRepository;
 import com.enigma.wmb_api.service.MenuService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -30,8 +35,14 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public List<Menu> getAll() {
-        return repository.findAll();
+    public Page<Menu> getAll(SearchMenuRequest request) {
+
+        if (request.getPage() <= 0) request.setPage(1);
+
+        Sort sorting = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+
+        Pageable pageable = PageRequest.of(request.getPage()-1, request.getSize(), sorting);
+        return repository.findAll(pageable);
     }
 
     @Override
