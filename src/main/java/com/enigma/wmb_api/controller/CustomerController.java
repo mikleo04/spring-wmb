@@ -104,4 +104,15 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<CommonResponse<String>> deleteCustomer(@PathVariable String id) {
+        service.delete(id);
+        CommonResponse<String> response = CommonResponse.<String>builder()
+                .statusCode(HttpStatus.ACCEPTED.value())
+                .message("Success delete customer")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+    }
+
 }

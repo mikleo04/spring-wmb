@@ -12,4 +12,5 @@ public interface CustomerService {
     CustomerResponse getById(String id);
     Page<CustomerResponse> getAll(SearchCustomerRequest request);
     CustomerResponse update(CustomerRequest request);
+    void delete(String id);
 }

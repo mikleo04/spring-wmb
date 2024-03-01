@@ -95,4 +95,10 @@ public class CustomerServiceImpl implements CustomerService {
                 .isMember(customerResponse.getIsMember())
                 .build();
     }
+
+    @Override
+    public void delete(String id) {
+        getById(id);
+        repository.deleteById(id);
+    }
 }
