@@ -11,4 +11,5 @@ public interface CustomerService {
     CustomerResponse creat(CustomerRequest request);
     CustomerResponse getById(String id);
     Page<CustomerResponse> getAll(SearchCustomerRequest request);
+    CustomerResponse update(CustomerRequest request);
 }

@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
-    private  final CustomerRepository repository;
+    private final CustomerRepository repository;
 
     @Override
     public CustomerResponse creat(CustomerRequest request) {
@@ -73,5 +73,26 @@ public class CustomerServiceImpl implements CustomerService {
                     .build();
         });
 
+    }
+
+    @Override
+    public CustomerResponse update(CustomerRequest request) {
+        getById(request.getId());
+
+        Customer customer = Customer.builder()
+                .id(request.getId())
+                .name(request.getName())
+                .mobilePhoneNumber(request.getMobilePhoneNumber())
+                .isMember(request.getIsMember())
+                .build();
+
+        Customer customerResponse = repository.saveAndFlush(customer);
+
+        return CustomerResponse.builder()
+                .id(customerResponse.getId())
+                .name(customerResponse.getName())
+                .mobilePhoneNumber(customerResponse.getMobilePhoneNumber())
+                .isMember(customerResponse.getIsMember())
+                .build();
     }
 }
