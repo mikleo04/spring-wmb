@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,13 @@ public class TransTypeServiceImpl implements TransTypeService {
 
     @Override
     public List<TransTypeResponse> getAll() {
-        return null;
+        List<TransType> transTypes = repository.findAll();
+
+        return transTypes.stream().map(transType -> {
+           return TransTypeResponse.builder()
+                   .id(transType.getId())
+                   .description(transType.getDescription())
+                   .build();
+           }).toList();
     }
 }

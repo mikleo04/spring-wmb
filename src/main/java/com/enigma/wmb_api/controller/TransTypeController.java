@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = UrlApi.TRANS_TYPE_API)
@@ -28,6 +30,19 @@ public class TransTypeController {
                 .statusCode(HttpStatus.OK.value())
                 .message("Success get transaction type")
                 .data(transTypeResult)
+                .build();
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonResponse<List<TransTypeResponse>>> getAllTranstype(){
+        List<TransTypeResponse> transTypesResult = service.getAll();
+
+        CommonResponse<List<TransTypeResponse>> response = CommonResponse.<List<TransTypeResponse>>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success get all transaction type")
+                .data(transTypesResult)
                 .build();
 
         return ResponseEntity.ok(response);
