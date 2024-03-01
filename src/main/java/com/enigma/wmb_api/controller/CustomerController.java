@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,5 +31,18 @@ public class CustomerController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CommonResponse<CustomerResponse>> getCustomerById(@PathVariable String id) {
+        CustomerResponse customerResult = service.getById(id);
+
+        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success get customer")
+                .data(customerResult)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 }
