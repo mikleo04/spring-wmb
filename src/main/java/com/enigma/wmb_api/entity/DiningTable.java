@@ -2,15 +2,13 @@ package com.enigma.wmb_api.entity;
 
 import com.enigma.wmb_api.constant.TableName;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
+@Builder
 @Entity
 @Table(name = TableName.DINING_TABLE_TABLE)
 public class DiningTable {

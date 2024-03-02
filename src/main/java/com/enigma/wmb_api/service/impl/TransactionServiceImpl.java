@@ -2,10 +2,7 @@ package com.enigma.wmb_api.service.impl;
 
 import com.enigma.wmb_api.dto.request.SearchTransactionRequest;
 import com.enigma.wmb_api.dto.request.TransactionRequest;
-import com.enigma.wmb_api.dto.response.CustomerResponse;
-import com.enigma.wmb_api.dto.response.TransTypeResponse;
-import com.enigma.wmb_api.dto.response.TransactionDetailResponse;
-import com.enigma.wmb_api.dto.response.TransactionResponse;
+import com.enigma.wmb_api.dto.response.*;
 import com.enigma.wmb_api.entity.*;
 import com.enigma.wmb_api.repository.TransactionRepository;
 import com.enigma.wmb_api.service.*;
@@ -49,7 +46,11 @@ public class TransactionServiceImpl implements TransactionService {
         // table validation
         DiningTable table = null;
         if (request.getTableId()  != null) {
-            table = tableService.getById(request.getTableId());
+            TableResponse tableResponse = tableService.getById(request.getTableId());
+            table = DiningTable.builder()
+                    .id(tableResponse.getId())
+                    .name(tableResponse.getName())
+                    .build();
         }
 
         // save transaction
@@ -71,7 +72,14 @@ public class TransactionServiceImpl implements TransactionService {
         List<TransactionDetail> trxDetails = request.getDetailRequests().stream()
                 .map(detailRequest -> {
 
-                    Menu menu = menuService.getById(detailRequest.getMenuId());
+                    MenuResponse menuResponse = menuService.getById(detailRequest.getMenuId());
+
+                    Menu menu = Menu.builder()
+                            .id(menuResponse.getId())
+                            .name(menuResponse.getName())
+                            .price(menuResponse.getPrice())
+                            .status(menuResponse.getStatus())
+                            .build();
 
                     return TransactionDetail.builder()
                             .transaction(trx)
