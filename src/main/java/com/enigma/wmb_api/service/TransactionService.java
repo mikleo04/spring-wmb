@@ -8,4 +8,5 @@ import org.springframework.data.domain.Page;
 public interface TransactionService {
     TransactionResponse create(TransactionRequest request);
     Page<TransactionResponse> getAll(SearchTransactionRequest request);
+    TransactionResponse getById(String id);
 }

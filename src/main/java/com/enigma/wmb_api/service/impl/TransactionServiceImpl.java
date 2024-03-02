@@ -15,10 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -143,5 +146,36 @@ public class TransactionServiceImpl implements TransactionService {
                     .detailTransaction(transactionDetailResponses)
                     .build();
         });
+    }
+
+    @Override
+    public TransactionResponse getById(String id) {
+
+        Optional<Transaction> transaction = repository.findById(id);
+
+        if (transaction.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found");
+
+        List<TransactionDetailResponse> detailResponses = transaction.get().getTransactionDetails().stream()
+                .map(transactionDetail -> {
+                    return TransactionDetailResponse.builder()
+                            .id(transactionDetail.getId())
+                            .menuId(transactionDetail.getMenu().getId())
+                            .menuPrice(transactionDetail.getMenuPrice())
+                            .quantity(transactionDetail.getQuantity())
+                            .build();
+                }).toList();
+
+        String tableId = null;
+        if (transaction.get().getTable() != null) {
+            tableId = transaction.get().getTable().getId();
+        }
+
+        return TransactionResponse.builder()
+                .id(transaction.get().getId())
+                .transDate(transaction.get().getTransDate())
+                .transTypeId(transaction.get().getTransType().getId())
+                .tableId(tableId)
+                .detailTransaction(detailResponses)
+                .build();
     }
 }

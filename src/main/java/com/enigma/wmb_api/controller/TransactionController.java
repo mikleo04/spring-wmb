@@ -74,7 +74,22 @@ public class TransactionController {
                 .build();
 
         return ResponseEntity.ok(response);
+    }
 
+    @GetMapping(
+            path = "{id}",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<CommonResponse<TransactionResponse>> getTransactionById(@PathVariable String id) {
+        TransactionResponse transactionResult = service.getById(id);
+
+        CommonResponse<TransactionResponse> response = CommonResponse.<TransactionResponse>builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success get transaction")
+                .data(transactionResult)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
 }
