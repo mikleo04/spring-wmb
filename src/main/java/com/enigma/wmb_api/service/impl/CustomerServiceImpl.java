@@ -6,6 +6,7 @@ import com.enigma.wmb_api.dto.response.CustomerResponse;
 import com.enigma.wmb_api.entity.Customer;
 import com.enigma.wmb_api.repository.CustomerRepository;
 import com.enigma.wmb_api.service.CustomerService;
+import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,9 +24,11 @@ import java.util.Optional;
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
+    private final ValidationUtil validationUtil;
 
     @Override
     public CustomerResponse creat(CustomerRequest request) {
+        validationUtil.validate(request);
 
         Customer customer = Customer.builder()
                 .name(request.getName())
