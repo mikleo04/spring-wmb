@@ -9,6 +9,7 @@ import lombok.*;
 @Setter
 @Getter
 @Entity
+@Builder
 @Table(name = TableName.MENU_TABLE)
 public class Menu {
     @Id

@@ -1,8 +1,10 @@
 package com.enigma.wmb_api.controller;
 
 import com.enigma.wmb_api.constant.UrlApi;
+import com.enigma.wmb_api.dto.request.MenuRequest;
 import com.enigma.wmb_api.dto.request.SearchMenuRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
+import com.enigma.wmb_api.dto.response.MenuResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.entity.Menu;
 import com.enigma.wmb_api.service.MenuService;
@@ -23,11 +25,11 @@ public class MenuController {
     private final MenuService service;
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<Menu>> createMenu(@RequestBody Menu menu) {
+    public ResponseEntity<CommonResponse<MenuResponse>> createMenu(@RequestBody MenuRequest request) {
 
-        Menu menuResult = service.create(menu);
+        MenuResponse menuResult = service.create(request);
 
-        CommonResponse<Menu> response = CommonResponse.<Menu>builder()
+        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Success creat menu")
                 .data(menuResult)
@@ -36,10 +38,10 @@ public class MenuController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<CommonResponse<Menu>> getMenuById(@PathVariable String id) {
-        Menu menuResult = service.getById(id);
+    public ResponseEntity<CommonResponse<MenuResponse>> getMenuById(@PathVariable String id) {
+        MenuResponse menuResult = service.getById(id);
 
-        CommonResponse<Menu> response = CommonResponse.<Menu>builder()
+        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success get menu")
                 .data(menuResult)
@@ -49,7 +51,7 @@ public class MenuController {
     }
 
     @GetMapping
-    public ResponseEntity<CommonResponse<List<Menu>>> getAllMenu(
+    public ResponseEntity<CommonResponse<List<MenuResponse>>> getAllMenu(
         @RequestParam(name = "page", defaultValue = "1") Integer page,
         @RequestParam(name = "size", defaultValue = "10") Integer size,
         @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
@@ -61,7 +63,7 @@ public class MenuController {
                 .direction(direction)
                 .sortBy(sortBy)
                 .build();
-        Page<Menu> menusResult = service.getAll(request);
+        Page<MenuResponse> menusResult = service.getAll(request);
 
         PagingResponse pagingResponse = PagingResponse.builder()
                 .totalPage(menusResult.getTotalPages())
@@ -72,7 +74,7 @@ public class MenuController {
                 .hasPrevious(menusResult.hasPrevious())
                 .build();
 
-        CommonResponse<List<Menu>> response = CommonResponse.<List<Menu>>builder()
+        CommonResponse<List<MenuResponse>> response = CommonResponse.<List<MenuResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success get menus")
                 .data(menusResult.getContent())
@@ -83,10 +85,10 @@ public class MenuController {
     }
 
     @PutMapping
-    public ResponseEntity<CommonResponse<Menu>> updateMenu(@RequestBody Menu menu) {
-        Menu menuResult = service.update(menu);
+    public ResponseEntity<CommonResponse<MenuResponse>> updateMenu(@RequestBody MenuRequest request) {
+        MenuResponse menuResult = service.update(request);
 
-        CommonResponse<Menu> response = CommonResponse.<Menu>builder()
+        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .message("Success update menu")
                 .data(menuResult)
