@@ -13,7 +13,6 @@ import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         repository.saveAndFlush(userAccount);
 
-        List<String > roles = userAccount.getAuthorities().stream()
+        List<String> roles = userAccount.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toList();
 
         return RegisterResponse.builder()
@@ -51,7 +50,27 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public RegisterResponse registerAdmin(AuthRequest request) {
-        return null;
+        validationUtil.validate(request);
+        List<Role> listRole = List.of(
+                roleService.getOrSave(UserRole.ADMIN),
+                roleService.getOrSave(UserRole.CUSTOMER)
+        );
+
+        UserAccount userAccount = UserAccount.builder()
+                .email(request.getEmail())
+                .role(listRole)
+                .password(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()))
+                .isEnable(true)
+                .build();
+        repository.saveAndFlush(userAccount);
+
+        List<String> roles = userAccount.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).toList();
+
+        return RegisterResponse.builder()
+                .email(userAccount.getEmail())
+                .role(roles.stream().map(UserRole::valueOf).toList())
+                .build();
     }
 
     @Override

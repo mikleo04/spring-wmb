@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.xml.stream.events.Comment;
-import java.awt.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,6 +33,23 @@ public class AuthController {
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Success cretae user")
+                .data(registerResult)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping(
+            path = "/register/admin",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<CommonResponse<RegisterResponse>> registerAdmid(@RequestBody AuthRequest request) {
+        RegisterResponse registerResult = service.registerAdmin(request);
+
+        CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
+                .statusCode(HttpStatus.CREATED.value())
+                .message("Succes create user admin")
                 .data(registerResult)
                 .build();
 
