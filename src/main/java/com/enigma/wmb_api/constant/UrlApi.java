@@ -6,4 +6,5 @@ public class UrlApi {
     public static final String TRANS_TYPE_API = "api/trans-types";
     public static final String CUSTOMER_API = "api/customers";
     public static final String TRANSACTION_API = "api/transactions";
+    public static final String AUTH_API = "api/auth";
 }
