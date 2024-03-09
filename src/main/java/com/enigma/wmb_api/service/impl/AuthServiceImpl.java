@@ -14,7 +14,9 @@ import com.enigma.wmb_api.service.CustomerService;
 import com.enigma.wmb_api.service.JwtService;
 import com.enigma.wmb_api.service.RoleService;
 import com.enigma.wmb_api.util.ValidationUtil;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,34 @@ public class AuthServiceImpl implements AuthService {
     private final CustomerService customerServicece;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+
+    @Value("${wmb.email.superadmin}")
+    private String emailSuperAdmin;
+    @Value("${wmb.password.superadmin}")
+    private String passwordSuperAdmin;
+
+    @PostConstruct
+    @Override
+    public void initSuperAdmin() {
+        Optional<UserAccount> currentSuperAdmin = repository.findByEmail(emailSuperAdmin);
+
+        if (currentSuperAdmin.isPresent()) return;
+
+        List<Role> roles = List.of(
+                roleService.getOrSave(UserRole.SUPER_ADMIN),
+                roleService.getOrSave(UserRole.ADMIN),
+                roleService.getOrSave(UserRole.CUSTOMER)
+        );
+
+        UserAccount superAdmin = UserAccount.builder()
+                .email(emailSuperAdmin)
+                .isEnable(true)
+                .password(passwordEncoder.encode(passwordSuperAdmin))
+                .role(roles)
+                .build();
+        repository.saveAndFlush(superAdmin);
+    }
 
     @Override
     public RegisterResponse register(RegisterRequest request) {
@@ -43,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
 
         UserAccount userAccount = UserAccount.builder()
                 .email(request.getEmail())
-                .password(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()))
+                .password(passwordEncoder.encode(request.getPassword()))
                 .role(List.of(role))
                 .isEnable(true)
                 .build();
@@ -77,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
         UserAccount userAccount = UserAccount.builder()
                 .email(request.getEmail())
                 .role(listRole)
-                .password(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()))
+                .password(passwordEncoder.encode(request.getPassword()))
                 .isEnable(true)
                 .build();
         repository.saveAndFlush(userAccount);

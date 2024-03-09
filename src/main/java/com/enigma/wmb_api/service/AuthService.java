@@ -6,7 +6,7 @@ import com.enigma.wmb_api.dto.response.LoginResponse;
 import com.enigma.wmb_api.dto.response.RegisterResponse;
 
 public interface AuthService {
-
+    void initSuperAdmin();
     RegisterResponse register(RegisterRequest request);
     RegisterResponse registerAdmin(RegisterRequest request);
     LoginResponse login(LoginRequest request);
