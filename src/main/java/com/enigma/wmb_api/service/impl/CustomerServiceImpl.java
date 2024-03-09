@@ -1,11 +1,14 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.UserRole;
 import com.enigma.wmb_api.dto.request.CustomerRequest;
 import com.enigma.wmb_api.dto.request.SearchCustomerRequest;
 import com.enigma.wmb_api.dto.response.CustomerResponse;
 import com.enigma.wmb_api.entity.Customer;
+import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.repository.CustomerRepository;
 import com.enigma.wmb_api.service.CustomerService;
+import com.enigma.wmb_api.service.UserService;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,9 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,6 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
     private final ValidationUtil validationUtil;
+    private final UserService userService;
 
     @Override
     public Customer creat(Customer customer) {
@@ -72,11 +78,18 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse update(CustomerRequest request) {
+        validationUtil.validate(request);
         Customer customerSelected = getById(request.getId());
+        UserAccount userAccount = userService.getByContext();
+        List<String> roles = userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
-        customerSelected.setName(request.getName());
-        customerSelected.setIsMember(request.getIsMember());
-        customerSelected.setMobilePhoneNumber(request.getMobilePhoneNumber());
+        if (customerSelected.getUserAccount().getId().equals(userAccount.getId()) || roles.contains(UserRole.ROLE_ADMIN.name()) || roles.contains(UserRole.ROLE_SUPER_ADMIN.name())) {
+            customerSelected.setName(request.getName());
+            customerSelected.setIsMember(request.getIsMember());
+            customerSelected.setMobilePhoneNumber(request.getMobilePhoneNumber());
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Acces not allowed");
+        }
 
         Customer customerResponse = repository.saveAndFlush(customerSelected);
 

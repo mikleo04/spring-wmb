@@ -6,4 +6,5 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends UserDetailsService {
     UserAccount getByuserId(String id);
+    UserAccount getByContext();
 }
