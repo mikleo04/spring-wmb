@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import java.util.List;
 public class TransTypeController {
     private final TransTypeService service;
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping("{id}")
     public ResponseEntity<CommonResponse<TransTypeResponse>> getTransTypeById(@PathVariable TransactionType id) {
         TransTypeResponse transTypeResult = service.getById(id);
@@ -35,6 +37,7 @@ public class TransTypeController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<TransTypeResponse>>> getAllTranstype(){
         List<TransTypeResponse> transTypesResult = service.getAll();

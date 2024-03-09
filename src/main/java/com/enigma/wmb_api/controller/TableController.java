@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class TableController {
 
     private final TableService service;
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponse<TableResponse>> creatTable(@RequestBody TableRequest request) {
 
@@ -39,6 +41,7 @@ public class TableController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping("{id}")
     public ResponseEntity<CommonResponse<TableResponse>> getTableByid(@PathVariable String id) {
         TableResponse tableResult = service.getById(id);
@@ -53,6 +56,7 @@ public class TableController {
                 .body(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<TableResponse>>> getAllTable(
             @RequestParam(name = "page", defaultValue = "1") Integer page,
@@ -87,6 +91,7 @@ public class TableController {
         return ResponseEntity.ok(response);
     }
 
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<CommonResponse<String>> deleteTable(@PathVariable String id) {
         CommonResponse<String> response = CommonResponse.<String>builder()
