@@ -11,11 +11,16 @@ import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.repository.UserAccountRepository;
 import com.enigma.wmb_api.service.AuthService;
 import com.enigma.wmb_api.service.CustomerService;
+import com.enigma.wmb_api.service.JwtService;
 import com.enigma.wmb_api.service.RoleService;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +33,8 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final ValidationUtil validationUtil;
     private final CustomerService customerServicece;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public RegisterResponse register(RegisterRequest request) {
@@ -93,6 +100,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        return null;
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                request.getEmail(),
+                request.getPassword()
+        );
+        Authentication authenticate = authenticationManager.authenticate(authentication);
+        UserAccount userAccount = (UserAccount) authenticate.getPrincipal();
+
+        String token = jwtService.generateToken(userAccount);
+        return LoginResponse.builder()
+                .email(userAccount.getUsername())
+                .role(userAccount.getAuthorities().stream().map(role -> UserRole.valueOf(role.getAuthority())).toList())
+                .token(token)
+                .build();
     }
 }
