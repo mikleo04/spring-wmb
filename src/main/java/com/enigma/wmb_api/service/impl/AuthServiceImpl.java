@@ -21,7 +21,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,9 +52,9 @@ public class AuthServiceImpl implements AuthService {
         if (currentSuperAdmin.isPresent()) return;
 
         List<Role> roles = List.of(
-                roleService.getOrSave(UserRole.SUPER_ADMIN),
-                roleService.getOrSave(UserRole.ADMIN),
-                roleService.getOrSave(UserRole.CUSTOMER)
+                roleService.getOrSave(UserRole.ROLE_SUPER_ADMIN),
+                roleService.getOrSave(UserRole.ROLE_ADMIN),
+                roleService.getOrSave(UserRole.ROLE_CUSTOMER)
         );
 
         UserAccount superAdmin = UserAccount.builder()
@@ -70,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public RegisterResponse register(RegisterRequest request) {
         validationUtil.validate(request);
-        Role role = roleService.getOrSave(UserRole.CUSTOMER);
+        Role role = roleService.getOrSave(UserRole.ROLE_CUSTOMER);
 
         UserAccount userAccount = UserAccount.builder()
                 .email(request.getEmail())
@@ -101,8 +100,8 @@ public class AuthServiceImpl implements AuthService {
     public RegisterResponse registerAdmin(RegisterRequest request) {
         validationUtil.validate(request);
         List<Role> listRole = List.of(
-                roleService.getOrSave(UserRole.ADMIN),
-                roleService.getOrSave(UserRole.CUSTOMER)
+                roleService.getOrSave(UserRole.ROLE_ADMIN),
+                roleService.getOrSave(UserRole.ROLE_CUSTOMER)
         );
 
         UserAccount userAccount = UserAccount.builder()

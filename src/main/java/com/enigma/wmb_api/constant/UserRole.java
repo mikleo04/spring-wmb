@@ -1,7 +1,7 @@
 package com.enigma.wmb_api.constant;
 
 public enum UserRole {
-    CUSTOMER,
-    ADMIN,
-    SUPER_ADMIN
+    ROLE_CUSTOMER,
+    ROLE_ADMIN,
+    ROLE_SUPER_ADMIN
 }

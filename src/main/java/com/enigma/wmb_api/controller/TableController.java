@@ -41,7 +41,7 @@ public class TableController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping("{id}")
     public ResponseEntity<CommonResponse<TableResponse>> getTableByid(@PathVariable String id) {
         TableResponse tableResult = service.getById(id);
@@ -56,7 +56,7 @@ public class TableController {
                 .body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<TableResponse>>> getAllTable(
             @RequestParam(name = "page", defaultValue = "1") Integer page,

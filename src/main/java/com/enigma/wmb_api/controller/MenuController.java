@@ -39,7 +39,7 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping("{id}")
     public ResponseEntity<CommonResponse<MenuResponse>> getMenuById(@PathVariable String id) {
         MenuResponse menuResult = service.getById(id);
@@ -53,7 +53,7 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<MenuResponse>>> getAllMenu(
         @RequestParam(name = "page", defaultValue = "1") Integer page,
