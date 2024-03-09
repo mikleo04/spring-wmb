@@ -35,13 +35,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionResponse create(TransactionRequest request) {
 
-        CustomerResponse customerResponse = customerService.getById(request.getCustomerId());
-        Customer customer = Customer.builder()
-                .id(customerResponse.getId())
-                .name(customerResponse.getName())
-                .mobilePhoneNumber(customerResponse.getMobilePhoneNumber())
-                .isMember(customerResponse.getIsMember())
-                .build();
+        Customer customer = customerService.getById(request.getCustomerId());
 
         // table validation
         DiningTable table = null;

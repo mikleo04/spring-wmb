@@ -6,11 +6,10 @@ import com.enigma.wmb_api.dto.response.CustomerResponse;
 import com.enigma.wmb_api.entity.Customer;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface CustomerService {
     Customer creat(Customer customer);
-    CustomerResponse getById(String id);
+    CustomerResponse getOneById(String id);
+    Customer getById(String id);
     Page<CustomerResponse> getAll(SearchCustomerRequest request);
     CustomerResponse update(CustomerRequest request);
     void delete(String id);

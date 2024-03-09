@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponse getById(String id) {
+    public CustomerResponse getOneById(String id) {
         Optional<Customer> customer = repository.findById(id);
         if (customer.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
 
@@ -42,7 +41,13 @@ public class CustomerServiceImpl implements CustomerService {
                 .name(customer.get().getName())
                 .mobilePhoneNumber(customer.get().getMobilePhoneNumber())
                 .isMember(customer.get().getIsMember())
+                .userAccountId(customer.get().getUserAccount().getId())
                 .build();
+    }
+
+    @Override
+    public Customer getById(String id) {
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
     }
 
     @Override
@@ -59,6 +64,7 @@ public class CustomerServiceImpl implements CustomerService {
                     .name(customer.getName())
                     .mobilePhoneNumber(customer.getMobilePhoneNumber())
                     .isMember(customer.getIsMember())
+                    .userAccountId(customer.getUserAccount().getId())
                     .build();
         });
 
@@ -66,22 +72,20 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse update(CustomerRequest request) {
-        getById(request.getId());
+        Customer customerSelected = getById(request.getId());
 
-        Customer customer = Customer.builder()
-                .id(request.getId())
-                .name(request.getName())
-                .mobilePhoneNumber(request.getMobilePhoneNumber())
-                .isMember(request.getIsMember())
-                .build();
+        customerSelected.setName(request.getName());
+        customerSelected.setIsMember(request.getIsMember());
+        customerSelected.setMobilePhoneNumber(request.getMobilePhoneNumber());
 
-        Customer customerResponse = repository.saveAndFlush(customer);
+        Customer customerResponse = repository.saveAndFlush(customerSelected);
 
         return CustomerResponse.builder()
                 .id(customerResponse.getId())
                 .name(customerResponse.getName())
                 .mobilePhoneNumber(customerResponse.getMobilePhoneNumber())
                 .isMember(customerResponse.getIsMember())
+                .userAccountId(customerResponse.getUserAccount().getId())
                 .build();
     }
 
