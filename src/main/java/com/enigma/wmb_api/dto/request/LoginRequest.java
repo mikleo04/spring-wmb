@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class AuthRequest {
+public class LoginRequest {
 
     @Email( regexp = "^[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]{2,}$" ,message = "Invalid email")
     private String email;

@@ -1,7 +1,7 @@
 package com.enigma.wmb_api.controller;
 
 import com.enigma.wmb_api.constant.UrlApi;
-import com.enigma.wmb_api.dto.request.AuthRequest;
+import com.enigma.wmb_api.dto.request.RegisterRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.RegisterResponse;
 import com.enigma.wmb_api.service.AuthService;
@@ -27,7 +27,7 @@ public class AuthController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<CommonResponse<RegisterResponse>> register(@RequestBody AuthRequest request) {
+    public ResponseEntity<CommonResponse<RegisterResponse>> register(@RequestBody RegisterRequest request) {
         RegisterResponse registerResult = service.register(request);
 
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
@@ -44,7 +44,7 @@ public class AuthController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<CommonResponse<RegisterResponse>> registerAdmid(@RequestBody AuthRequest request) {
+    public ResponseEntity<CommonResponse<RegisterResponse>> registerAdmid(@RequestBody RegisterRequest request) {
         RegisterResponse registerResult = service.registerAdmin(request);
 
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()

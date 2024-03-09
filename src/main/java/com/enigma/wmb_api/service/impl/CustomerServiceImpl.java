@@ -27,23 +27,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final ValidationUtil validationUtil;
 
     @Override
-    public CustomerResponse creat(CustomerRequest request) {
-        validationUtil.validate(request);
-
-        Customer customer = Customer.builder()
-                .name(request.getName())
-                .mobilePhoneNumber(request.getMobilePhoneNumber())
-                .isMember(request.getIsMember())
-                .build();
-
-        Customer customerResponse = repository.saveAndFlush(customer);
-
-        return CustomerResponse.builder()
-                .id(customerResponse.getId())
-                .name(customerResponse.getName())
-                .mobilePhoneNumber(customerResponse.getMobilePhoneNumber())
-                .isMember(customerResponse.getIsMember())
-                .build();
+    public Customer creat(Customer customer) {
+        validationUtil.validate(customer);
+        return repository.saveAndFlush(customer);
     }
 
     @Override

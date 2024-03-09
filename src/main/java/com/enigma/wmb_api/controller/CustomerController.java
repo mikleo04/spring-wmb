@@ -24,22 +24,6 @@ import java.util.List;
 public class CustomerController {
     private final CustomerService service;
 
-    @PostMapping(
-            consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<CommonResponse<CustomerResponse>> creatCustomer(@RequestBody CustomerRequest request) {
-        CustomerResponse customerResult = service.creat(request);
-
-        CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
-                .statusCode(HttpStatus.CREATED.value())
-                .message("Success creat new customer")
-                .data(customerResult)
-                .build();
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<CustomerResponse>> getCustomerById(@PathVariable String id) {
         CustomerResponse customerResult = service.getById(id);

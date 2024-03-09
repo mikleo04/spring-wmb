@@ -17,7 +17,7 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "mobile_phone_no")
@@ -25,5 +25,9 @@ public class Customer {
 
     @Column(name = "is_member")
     private Boolean isMember;
+
+    @OneToOne
+    @JoinColumn(name = "user_account_id", unique = true)
+    private UserAccount userAccount;
 
 }

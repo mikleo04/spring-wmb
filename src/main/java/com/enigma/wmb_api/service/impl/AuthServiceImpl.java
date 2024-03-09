@@ -1,13 +1,16 @@
 package com.enigma.wmb_api.service.impl;
 
 import com.enigma.wmb_api.constant.UserRole;
-import com.enigma.wmb_api.dto.request.AuthRequest;
+import com.enigma.wmb_api.dto.request.LoginRequest;
+import com.enigma.wmb_api.dto.request.RegisterRequest;
 import com.enigma.wmb_api.dto.response.LoginResponse;
 import com.enigma.wmb_api.dto.response.RegisterResponse;
+import com.enigma.wmb_api.entity.Customer;
 import com.enigma.wmb_api.entity.Role;
 import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.repository.UserAccountRepository;
 import com.enigma.wmb_api.service.AuthService;
+import com.enigma.wmb_api.service.CustomerService;
 import com.enigma.wmb_api.service.RoleService;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +27,10 @@ public class AuthServiceImpl implements AuthService {
     private final UserAccountRepository repository;
     private final RoleService roleService;
     private final ValidationUtil validationUtil;
+    private final CustomerService customerServicece;
 
     @Override
-    public RegisterResponse register(AuthRequest request) {
+    public RegisterResponse register(RegisterRequest request) {
         validationUtil.validate(request);
         Role role = roleService.getOrSave(UserRole.CUSTOMER);
 
@@ -38,10 +42,17 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         repository.saveAndFlush(userAccount);
 
+        Customer customer = Customer.builder()
+                .name(request.getName())
+                .userAccount(userAccount)
+                .build();
+        customerServicece.creat(customer);
+
         List<String> roles = userAccount.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toList();
 
         return RegisterResponse.builder()
+                .name(customer.getName())
                 .email(userAccount.getEmail())
                 .role(roles.stream().map(UserRole::valueOf).toList())
                 .build();
@@ -49,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RegisterResponse registerAdmin(AuthRequest request) {
+    public RegisterResponse registerAdmin(RegisterRequest request) {
         validationUtil.validate(request);
         List<Role> listRole = List.of(
                 roleService.getOrSave(UserRole.ADMIN),
@@ -64,17 +75,24 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         repository.saveAndFlush(userAccount);
 
+        Customer customer = Customer.builder()
+                .name(request.getName())
+                .userAccount(userAccount)
+                .build();
+        customerServicece.creat(customer);
+
         List<String> roles = userAccount.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).toList();
 
         return RegisterResponse.builder()
+                .name(customer.getName())
                 .email(userAccount.getEmail())
                 .role(roles.stream().map(UserRole::valueOf).toList())
                 .build();
     }
 
     @Override
-    public LoginResponse login(AuthRequest request) {
+    public LoginResponse login(LoginRequest request) {
         return null;
     }
 }
