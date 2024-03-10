@@ -8,5 +8,5 @@ public class UrlApi {
     public static final String TRANSACTION_API = "api/transactions";
     public static final String AUTH_API = "api/auth";
     public static final String USER_ACCOUT_API = "api/account";
-    public static final String DOWNLOAD_MENU_IMAGE_API = "api/menu/images";
+    public static final String DOWNLOAD_MENU_IMAGE_API = "api/menu/images/";
 }
