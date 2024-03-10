@@ -42,4 +42,8 @@ public class Transaction {
     @OneToMany(mappedBy = "transaction")
     @JsonManagedReference
     private List<TransactionDetail>transactionDetails;
+
+    @OneToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 }

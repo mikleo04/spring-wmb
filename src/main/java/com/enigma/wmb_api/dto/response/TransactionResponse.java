@@ -30,4 +30,6 @@ public class TransactionResponse {
 
     private List<TransactionDetailResponse> detailTransaction;
 
+    private PaymentResponse payment;
+
 }

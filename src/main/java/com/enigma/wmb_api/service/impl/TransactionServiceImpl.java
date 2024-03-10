@@ -2,11 +2,11 @@ package com.enigma.wmb_api.service.impl;
 
 import com.enigma.wmb_api.dto.request.SearchTransactionRequest;
 import com.enigma.wmb_api.dto.request.TransactionRequest;
+import com.enigma.wmb_api.dto.request.UpdateStatusTransactionRequest;
 import com.enigma.wmb_api.dto.response.*;
 import com.enigma.wmb_api.entity.*;
 import com.enigma.wmb_api.repository.TransactionRepository;
 import com.enigma.wmb_api.service.*;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
@@ -30,8 +31,9 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransTypeService transTypeService;
     private final TransactionDetailService transactionDetailService;
     private final MenuService menuService;
+    private final PaymentService paymentService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public TransactionResponse create(TransactionRequest request) {
 
@@ -86,6 +88,16 @@ public class TransactionServiceImpl implements TransactionService {
         transactionDetailService.createBulk(trxDetails);
         trx.setTransactionDetails(trxDetails);
 
+        Payment payment = paymentService.createPayment(trx);
+        trx.setPayment(payment);
+
+        PaymentResponse paymentResponse = PaymentResponse.builder()
+                .id(payment.getId())
+                .token(payment.getToken())
+                .transactionStatus(payment.getTransactionStatus())
+                .redirectUrl(payment.getRedirectUrl())
+                .build();
+
         List<TransactionDetailResponse> trxDetailResponse =trxDetails.stream()
                 .map(trxDetail -> {
                     return TransactionDetailResponse.builder()
@@ -109,6 +121,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .transTypeId(trx.getTransType().getId())
                 .detailTransaction(trxDetailResponse)
                 .transDate(trx.getTransDate())
+                .payment(paymentResponse)
                 .build();
     }
 
@@ -134,6 +147,14 @@ public class TransactionServiceImpl implements TransactionService {
                                 .build();
                     }).toList();
 
+            Payment payment = transaction.getPayment();
+            PaymentResponse paymentResponse = PaymentResponse.builder()
+                    .id(payment.getId())
+                    .token(payment.getToken())
+                    .transactionStatus(payment.getTransactionStatus())
+                    .redirectUrl(payment.getRedirectUrl())
+                    .build();
+
             String tableId = null;
             if(transaction.getTable() != null) {
                 tableId = transaction.getTable().getId();
@@ -146,6 +167,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .transDate(transaction.getTransDate())
                     .tableId(tableId)
                     .detailTransaction(transactionDetailResponses)
+                    .payment(paymentResponse)
                     .build();
         });
     }
@@ -180,4 +202,16 @@ public class TransactionServiceImpl implements TransactionService {
                 .detailTransaction(detailResponses)
                 .build();
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateStatus(UpdateStatusTransactionRequest request) {
+        Transaction transaction = repository.findById(request.getOrderId()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "transaction not found")
+        );
+
+        Payment payment = transaction.getPayment();
+        payment.setTransactionStatus(request.getTransactionStatus());
+    }
+
 }

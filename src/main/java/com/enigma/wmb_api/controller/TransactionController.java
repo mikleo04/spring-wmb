@@ -1,8 +1,10 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.TransactionStatus;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.SearchTransactionRequest;
 import com.enigma.wmb_api.dto.request.TransactionRequest;
+import com.enigma.wmb_api.dto.request.UpdateStatusTransactionRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.dto.response.TransactionResponse;
@@ -16,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +27,7 @@ public class TransactionController {
 
     private final TransactionService service;
 
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -94,6 +97,24 @@ public class TransactionController {
                 .build();
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/status")
+    public ResponseEntity<CommonResponse<?>> updateStatusTransaction(
+            @RequestBody Map<String, Object> request
+    ) {
+        UpdateStatusTransactionRequest statusTransactionRequest = UpdateStatusTransactionRequest.builder()
+                .orderId(request.get("order_id").toString())
+                .transactionStatus(TransactionStatus.valueOf(request.get("transaction_status").toString().toUpperCase()))
+                .build();
+
+        service.updateStatus(statusTransactionRequest);
+
+        return ResponseEntity.ok(CommonResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success update status transaction")
+                .build());
+
     }
 
 }
