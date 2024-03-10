@@ -53,12 +53,8 @@ public class MenuServiceImpl implements MenuService {
     public MenuResponse getById(String id) {
         Optional<Menu> menu = repository.findById(id);
         if (menu.isEmpty()) throw new RuntimeException("Menu not found " + HttpStatus.NOT_FOUND);
-        return MenuResponse.builder()
-                .id(menu.get().getId())
-                .name(menu.get().getName())
-                .price(menu.get().getPrice())
-                .status(menu.get().getStatus())
-                .build();
+
+        return convertMenuToMenuResponse(menu.get());
     }
 
     @Override
@@ -69,17 +65,7 @@ public class MenuServiceImpl implements MenuService {
         Sort sorting = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
 
         Pageable pageable = PageRequest.of(request.getPage()-1, request.getSize(), sorting);
-        Page<Menu> menuResponses = repository.findAll(pageable);
-
-        return menuResponses.map(menu -> {
-            return MenuResponse.builder()
-                    .id(menu.getId())
-                    .name(menu.getName())
-                    .price(menu.getPrice())
-                    .status(menu.getStatus())
-                    .build();
-        });
-
+        return repository.findAll(pageable).map(this::convertMenuToMenuResponse);
     }
 
     @Override
