@@ -8,6 +8,8 @@ import com.enigma.wmb_api.dto.response.MenuResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.entity.Menu;
 import com.enigma.wmb_api.service.MenuService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -15,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,19 +27,37 @@ import java.util.List;
 public class MenuController {
 
     private final MenuService service;
+    private final ObjectMapper objectMapper;
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CommonResponse<MenuResponse>> createMenu(@RequestBody MenuRequest request) {
+    @PostMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces =MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<CommonResponse<MenuResponse>> createMenu(
+            @RequestPart(name = "menu") String jsonMenu,
+            @RequestPart(name = "images") List<MultipartFile> images
+    ) {
+        CommonResponse.CommonResponseBuilder<MenuResponse> responseBuilder = CommonResponse.builder();
 
-        MenuResponse menuResult = service.create(request);
+        try {
+            MenuRequest request = objectMapper.readValue(jsonMenu, new TypeReference<>() {});
+            request.setImages(images);
 
-        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
-                .statusCode(HttpStatus.CREATED.value())
-                .message("Success creat menu")
-                .data(menuResult)
-                .build();
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            MenuResponse menuResponse = service.create(request);
+
+            responseBuilder.statusCode(HttpStatus.CREATED.value());
+            responseBuilder.message("Success creat menu");
+            responseBuilder.data(menuResponse);
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseBuilder.build());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseBuilder.message("Internal server error woi");
+            responseBuilder.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBuilder.build());
+        }
+
     }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")

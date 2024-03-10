@@ -1,10 +1,14 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.MenuRequest;
 import com.enigma.wmb_api.dto.request.SearchMenuRequest;
+import com.enigma.wmb_api.dto.response.ImageResponse;
 import com.enigma.wmb_api.dto.response.MenuResponse;
+import com.enigma.wmb_api.entity.Image;
 import com.enigma.wmb_api.entity.Menu;
 import com.enigma.wmb_api.repository.MenuRepository;
+import com.enigma.wmb_api.service.ImageService;
 import com.enigma.wmb_api.service.MenuService;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -25,24 +30,23 @@ public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository repository;
     private final ValidationUtil validationUtil;
+    private final ImageService imageService;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public MenuResponse create(MenuRequest request) {
         validationUtil.validate(request);
+
         Menu menu = Menu.builder()
                 .name(request.getName())
                 .price(request.getPrice())
                 .status(request.getStatus())
                 .build();
+        List<Image> images = imageService.create(menu, request.getImages());
 
-        Menu menuResponse = repository.saveAndFlush(menu);
+        menu.setImages(images);
 
-        return MenuResponse.builder()
-                .id(menuResponse.getId())
-                .name(menuResponse.getName())
-                .price(menuResponse.getPrice())
-                .status(menuResponse.getStatus())
-                .build();
+        return convertMenuToMenuResponse(menu);
     }
 
     @Override
@@ -110,4 +114,22 @@ public class MenuServiceImpl implements MenuService {
         getById(id);
         repository.updateStatus(id, status);
     }
+
+    private MenuResponse convertMenuToMenuResponse(Menu menu) {
+        List<ImageResponse> imageResponses = menu.getImages().stream().map(image -> {
+            return ImageResponse.builder()
+                    .name(image.getName())
+                    .url(UrlApi.DOWNLOAD_MENU_IMAGE_API + image.getId())
+                    .build();
+        }).toList();
+
+        return MenuResponse.builder()
+                .id(menu.getId())
+                .name(menu.getName())
+                .price(menu.getPrice())
+                .status(menu.getStatus())
+                .images(imageResponses)
+                .build();
+    }
+
 }

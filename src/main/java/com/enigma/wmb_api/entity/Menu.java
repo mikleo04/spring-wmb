@@ -4,6 +4,8 @@ import com.enigma.wmb_api.constant.TableName;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -24,4 +26,7 @@ public class Menu {
 
     @Column(name = "status", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean status;
+
+    @OneToMany(mappedBy = "menu")
+    private List<Image> images;
 }

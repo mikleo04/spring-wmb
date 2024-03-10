@@ -10,4 +10,5 @@ public class TableName {
     public static final String ROLE_TABLE = "m_role";
     public static final String USER_ACCOUNT_TABLE = "m_user_account";
     public static final String PAYMENT_TABLE = "t_payment";
+    public static final String IMAGE_TABLE = "m_image";
 }

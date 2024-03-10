@@ -2,6 +2,8 @@ package com.enigma.wmb_api.dto.response;
 
 import lombok.*;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -15,4 +17,7 @@ public class MenuResponse {
     private Long price;
 
     private Boolean status;
+
+    private List<ImageResponse> images;
+
 }
