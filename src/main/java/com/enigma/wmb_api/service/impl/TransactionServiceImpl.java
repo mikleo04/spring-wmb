@@ -68,7 +68,7 @@ public class TransactionServiceImpl implements TransactionService {
         List<TransactionDetail> trxDetails = request.getDetailRequests().stream()
                 .map(detailRequest -> {
 
-                    MenuResponse menuResponse = menuService.getById(detailRequest.getMenuId());
+                    MenuResponse menuResponse = menuService.getOneById(detailRequest.getMenuId());
 
                     Menu menu = Menu.builder()
                             .id(menuResponse.getId())

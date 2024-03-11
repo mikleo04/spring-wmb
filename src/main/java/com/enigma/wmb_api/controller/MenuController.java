@@ -6,7 +6,6 @@ import com.enigma.wmb_api.dto.request.SearchMenuRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.MenuResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
-import com.enigma.wmb_api.entity.Menu;
 import com.enigma.wmb_api.service.MenuService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +35,7 @@ public class MenuController {
     )
     public ResponseEntity<CommonResponse<MenuResponse>> createMenu(
             @RequestPart(name = "menu") String jsonMenu,
-            @RequestPart(name = "images") List<MultipartFile> images
+            @RequestPart(name = "images" ,required = false) List<MultipartFile> images
     ) {
         CommonResponse.CommonResponseBuilder<MenuResponse> responseBuilder = CommonResponse.builder();
 
@@ -63,7 +62,7 @@ public class MenuController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping("{id}")
     public ResponseEntity<CommonResponse<MenuResponse>> getMenuById(@PathVariable String id) {
-        MenuResponse menuResult = service.getById(id);
+        MenuResponse menuResult = service.getOneById(id);
 
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
@@ -110,17 +109,33 @@ public class MenuController {
     }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
-    @PutMapping
-    public ResponseEntity<CommonResponse<MenuResponse>> updateMenu(@RequestBody MenuRequest request) {
-        MenuResponse menuResult = service.update(request);
+    @PutMapping(
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<CommonResponse<MenuResponse>> updateMenu(
+            @RequestPart(name = "menu") String jsonMenu,
+            @RequestPart(name = "images", required = false) List<MultipartFile> images
+    ) {
+        CommonResponse.CommonResponseBuilder<MenuResponse> responseBuilder = CommonResponse.builder();
 
-        CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
-                .statusCode(HttpStatus.ACCEPTED.value())
-                .message("Success update menu")
-                .data(menuResult)
-                .build();
+        try {
+            MenuRequest request = objectMapper.readValue(jsonMenu, new TypeReference<>() {});
+            request.setImages(images);
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
+            MenuResponse menuResponse = service.update(request);
+
+            responseBuilder.statusCode(HttpStatus.OK.value());
+            responseBuilder.message("Success update menu");
+            responseBuilder.data(menuResponse);
+            return ResponseEntity.status(HttpStatus.OK).body(responseBuilder.build());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            responseBuilder.message("Internal server error woi");
+            responseBuilder.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBuilder.build());
+        }
     }
 
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")

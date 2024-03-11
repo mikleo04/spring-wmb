@@ -12,6 +12,7 @@ import com.enigma.wmb_api.service.ImageService;
 import com.enigma.wmb_api.service.MenuService;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MenuServiceImpl implements MenuService {
 
     private final MenuRepository repository;
@@ -42,15 +44,23 @@ public class MenuServiceImpl implements MenuService {
                 .price(request.getPrice())
                 .status(request.getStatus())
                 .build();
-        List<Image> images = imageService.create(menu, request.getImages());
-
-        menu.setImages(images);
+        if (request.getImages() != null) {
+            List<Image> images = imageService.create(menu, request.getImages());
+            menu.setImages(images);
+        } else {
+            repository.saveAndFlush(menu);
+        }
 
         return convertMenuToMenuResponse(menu);
     }
 
     @Override
-    public MenuResponse getById(String id) {
+    public Menu getById(String id) {
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu not found"));
+    }
+
+    @Override
+    public MenuResponse getOneById(String id) {
         Optional<Menu> menu = repository.findById(id);
         if (menu.isEmpty()) throw new RuntimeException("Menu not found " + HttpStatus.NOT_FOUND);
 
@@ -68,46 +78,49 @@ public class MenuServiceImpl implements MenuService {
         return repository.findAll(pageable).map(this::convertMenuToMenuResponse);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public MenuResponse update(MenuRequest request) {
-        getById(request.getId());
+        Menu menu = getById(request.getId());
+        List<String> currentIdImages = menu.getImages().stream().map(image -> image.getId()).toList();
 
-        Menu menu = Menu.builder()
-                .id(request.getId())
-                .name(request.getName())
-                .price(request.getPrice())
-                .status(request.getStatus())
-                .build();
+        menu.setId(request.getId());
+        menu.setName(request.getName());
+        menu.setStatus(request.getStatus());
+        menu.setPrice(request.getPrice());
+        if (request.getImages() != null) {
+           currentIdImages.forEach(imageService::deleteById);
+            List<Image> images = imageService.create(menu, request.getImages());
+            menu.setImages(images);
+        } else {
+            repository.saveAndFlush(menu);
+        }
 
-        Menu menuResponse = repository.saveAndFlush(menu);
-
-        return MenuResponse.builder()
-                .id(menuResponse.getId())
-                .name(menuResponse.getName())
-                .price(menuResponse.getPrice())
-                .status(menuResponse.getStatus())
-                .build();
+        return convertMenuToMenuResponse(menu);
     }
 
     @Override
     public void delete(String id) {
-        getById(id);
+        getOneById(id);
         repository.deleteById(id);
     }
 
     @Override
     public void updateStatus(String id, Boolean status) {
-        getById(id);
+        getOneById(id);
         repository.updateStatus(id, status);
     }
 
     private MenuResponse convertMenuToMenuResponse(Menu menu) {
-        List<ImageResponse> imageResponses = menu.getImages().stream().map(image -> {
-            return ImageResponse.builder()
-                    .name(image.getName())
-                    .url(UrlApi.DOWNLOAD_MENU_IMAGE_API + image.getId())
-                    .build();
-        }).toList();
+        List<ImageResponse> imageResponses = null;
+        if (menu.getImages() != null) {
+            imageResponses = menu.getImages().stream().map(image -> {
+                return ImageResponse.builder()
+                        .name(image.getName())
+                        .url(UrlApi.DOWNLOAD_MENU_IMAGE_API + image.getId())
+                        .build();
+            }).toList();
+        }
 
         return MenuResponse.builder()
                 .id(menu.getId())

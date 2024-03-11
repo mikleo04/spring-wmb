@@ -1,7 +1,7 @@
 package com.enigma.wmb_api.controller;
 
 import com.enigma.wmb_api.constant.UrlApi;
-import com.enigma.wmb_api.entity.Image;
+import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.service.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -9,9 +9,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +24,16 @@ public class ImageController {
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
                 .body(image);
+    }
+
+    @DeleteMapping(path = UrlApi.DOWNLOAD_MENU_IMAGE_API + "{id}")
+    public ResponseEntity<CommonResponse<?>> deleteImage(@PathVariable(name = "id") String id) {
+        imageService.deleteById(id);
+        CommonResponse<Object> response = CommonResponse.builder()
+                .statusCode(HttpStatus.OK.value())
+                .message("Success delete image")
+                .build();
+        return ResponseEntity.ok(response);
     }
 
 

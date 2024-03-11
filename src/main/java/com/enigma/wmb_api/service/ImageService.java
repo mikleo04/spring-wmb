@@ -10,6 +10,6 @@ import java.util.List;
 public interface ImageService {
     List<Image> create(Menu menu, List<MultipartFile> multipartFiles);
     Resource getById(String id);
-    void deleteByID(String id);
+    void deleteById(String id);
 
 }
