@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
     private final AuthenticationFilter authenticationFilter;
+    private final AuthenticationEntryPointImpl authenticationEntryPoint;
+    private final AccessDeniedHandlerImpl accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -27,6 +29,10 @@ public class SecurityConfiguration {
                 .httpBasic(htttp -> htttp.disable())
                 .sessionManagement(cfg -> cfg.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(config -> {
+                    config.accessDeniedHandler(accessDeniedHandler);
+                    config.authenticationEntryPoint(authenticationEntryPoint);
+                })
                 .authorizeHttpRequests(req -> {
                     req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                             .requestMatchers("/api/auth/**").permitAll()
