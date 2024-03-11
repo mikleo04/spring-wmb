@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -34,16 +35,19 @@ public class UserServiceImpl implements UserService {
     private final UserAccountRepository userAccountRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userAccountRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("username not found"));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserAccount getByuserId(String id) {
         return userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserAccountResponse getOneById(String id) {
         UserAccount userAccount = userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not foun"));
@@ -56,6 +60,7 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<UserAccountResponse> getAll(SearchUSerAccountResquest request) {
         if (request.getPage() <= 0) request.setPage(1);
@@ -74,6 +79,7 @@ public class UserServiceImpl implements UserService {
         });
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserAccount getByContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -81,6 +87,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateEmailOrPassword(UpdateUserAccountRequest request) {
 
@@ -103,12 +110,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateIsEnable(String id, Boolean isEnable) {
         getByuserId(id);
-        log.info("Masuk ni id nya {}", id);
         userAccountRepository.updateIsEnable(id, isEnable);
-        log.info("Masuk ni id nya {}", id);
     }
 
 }

@@ -8,6 +8,7 @@ import com.enigma.wmb_api.service.TransactionDetailService;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class TransaactionDetailServiceImpl implements TransactionDetailService {
     private final TransactionDetailRepository repository;
     private final ValidationUtil validationUtil;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public List<TransactionDetail> createBulk(List<TransactionDetail> transactionDetails) {
         validationUtil.validate(transactionDetails);

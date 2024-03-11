@@ -47,6 +47,7 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public List<Image> create(Menu menu, List<MultipartFile> multipartFiles) {
 
@@ -78,6 +79,7 @@ public class ImageServiceImpl implements ImageService {
         return images;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Resource getById(String id) {
         try {

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class TableServiceImpl implements TableService {
     private final TableRepository repository;
     private final ValidationUtil validationUtil;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public TableResponse creat(TableRequest request) {
         validationUtil.validate(request);
@@ -42,6 +44,7 @@ public class TableServiceImpl implements TableService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public TableResponse getById(String id) {
         Optional<DiningTable> table = repository.findById(id);
@@ -55,6 +58,7 @@ public class TableServiceImpl implements TableService {
 
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TableResponse> getAll(SearchTableRequest request) {
 
@@ -74,6 +78,7 @@ public class TableServiceImpl implements TableService {
         });
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(String id) {
         getById(id);

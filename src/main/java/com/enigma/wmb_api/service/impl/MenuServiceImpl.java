@@ -54,11 +54,13 @@ public class MenuServiceImpl implements MenuService {
         return convertMenuToMenuResponse(menu);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Menu getById(String id) {
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Menu not found"));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public MenuResponse getOneById(String id) {
         Optional<Menu> menu = repository.findById(id);
@@ -67,6 +69,7 @@ public class MenuServiceImpl implements MenuService {
         return convertMenuToMenuResponse(menu.get());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<MenuResponse> getAll(SearchMenuRequest request) {
 
@@ -109,6 +112,7 @@ public class MenuServiceImpl implements MenuService {
         repository.deleteById(id);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateStatus(String id, Boolean status) {
         getOneById(id);

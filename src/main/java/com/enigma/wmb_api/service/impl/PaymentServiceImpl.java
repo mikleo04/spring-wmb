@@ -87,8 +87,4 @@ public class PaymentServiceImpl implements PaymentService {
         return payment;
     }
 
-    @Override
-    public void checkFailedAndUpdatePayment() {
-
-    }
 }

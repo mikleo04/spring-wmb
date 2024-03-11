@@ -125,6 +125,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<TransactionResponse> getAll(SearchTransactionRequest request) {
 
@@ -172,6 +173,7 @@ public class TransactionServiceImpl implements TransactionService {
         });
     }
 
+    @Transactional(readOnly = true)
     @Override
     public TransactionResponse getById(String id) {
 

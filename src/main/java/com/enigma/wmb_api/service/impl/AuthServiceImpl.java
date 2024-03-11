@@ -25,6 +25,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
     @Value("${wmb.password.superadmin}")
     private String passwordSuperAdmin;
 
+    @Transactional(rollbackFor = Exception.class)
     @PostConstruct
     @Override
     public void initSuperAdmin() {
@@ -68,6 +70,7 @@ public class AuthServiceImpl implements AuthService {
         repository.saveAndFlush(superAdmin);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse register(RegisterRequest request) throws DataIntegrityViolationException {
         validationUtil.validate(request);
@@ -98,6 +101,7 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public RegisterResponse registerAdmin(RegisterRequest request) throws DataIntegrityViolationException {
         validationUtil.validate(request);
@@ -130,6 +134,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public LoginResponse login(LoginRequest request) {
 

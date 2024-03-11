@@ -38,6 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
         return repository.saveAndFlush(customer);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CustomerResponse getOneById(String id) {
         Optional<Customer> customer = repository.findById(id);
@@ -52,11 +53,13 @@ public class CustomerServiceImpl implements CustomerService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Customer getById(String id) {
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<CustomerResponse> getAll(SearchCustomerRequest request) {
         Sort sorting = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
@@ -77,6 +80,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public CustomerResponse update(CustomerRequest request) {
         validationUtil.validate(request);
@@ -102,6 +106,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .userAccountId(customerResponse.getUserAccount().getId())
                 .build();
     }
+
 
     @Transactional(rollbackFor = Exception.class)
     @Override

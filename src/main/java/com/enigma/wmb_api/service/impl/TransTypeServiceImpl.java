@@ -8,6 +8,7 @@ import com.enigma.wmb_api.service.TransTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class TransTypeServiceImpl implements TransTypeService {
     private final TransTypeRepository repository;
 
+    @Transactional(readOnly = true)
     @Override
     public TransTypeResponse getById(TransactionType id) {
         Optional<TransType> transType = repository.findById(id);
@@ -31,6 +33,7 @@ public class TransTypeServiceImpl implements TransTypeService {
                 .build();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public List<TransTypeResponse> getAll() {
         List<TransType> transTypes = repository.findAll();
