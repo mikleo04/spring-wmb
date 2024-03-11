@@ -1,11 +1,18 @@
 package com.enigma.wmb_api.service.impl;
 
 import com.enigma.wmb_api.constant.UserRole;
+import com.enigma.wmb_api.dto.request.SearchUSerAccountResquest;
 import com.enigma.wmb_api.dto.request.UpdateUserAccountRequest;
+import com.enigma.wmb_api.dto.response.UserAccountResponse;
+import com.enigma.wmb_api.entity.Role;
 import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.repository.UserAccountRepository;
 import com.enigma.wmb_api.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,6 +40,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserAccount getByuserId(String id) {
         return userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+    }
+
+    @Override
+    public UserAccountResponse getOneById(String id) {
+        UserAccount userAccount = userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not foun"));
+        return UserAccountResponse.builder()
+                .id(userAccount.getId())
+                .email(userAccount.getEmail())
+                .password(userAccount.getPassword())
+                .isEnable(userAccount.getIsEnable())
+                .roles(userAccount.getRole().stream().map(Role::getRole).toList())
+                .build();
+    }
+
+    @Override
+    public Page<UserAccountResponse> getAll(SearchUSerAccountResquest request) {
+        if (request.getPage() <= 0) request.setPage(1);
+        Sort sorting = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
+        Pageable pageable = PageRequest.of(request.getPage()-1, request.getSize(), sorting);
+        Page<UserAccount> userAccounts = userAccountRepository.findAll(pageable);
+
+        return userAccounts.map(account -> {
+            return UserAccountResponse.builder()
+                    .id(account.getId())
+                    .email(account.getEmail())
+                    .password(account.getPassword())
+                    .isEnable(account.getIsEnable())
+                    .roles(account.getRole().stream().map(Role::getRole).toList())
+                    .build();
+        });
     }
 
     @Override
