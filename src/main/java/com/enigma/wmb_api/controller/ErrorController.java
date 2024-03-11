@@ -2,6 +2,7 @@ package com.enigma.wmb_api.controller;
 
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,6 +30,30 @@ public class ErrorController {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<CommonResponse<?>> dataIntegrityViolationException(DataIntegrityViolationException exception) {
+        CommonResponse.CommonResponseBuilder<Object> commonResponseBuilder = CommonResponse.builder();
+
+        HttpStatus httpStatus;
+
+        if (exception.getMessage().contains("foreign key constraint")) {
+            commonResponseBuilder.statusCode(HttpStatus.BAD_REQUEST.value());
+            commonResponseBuilder.message("Can't delete this data because have realtion");
+            httpStatus = HttpStatus.BAD_REQUEST;
+        } else if (exception.getMessage().contains("unique constraint") || exception.getMessage().contains("Duplicate entry")) {
+            commonResponseBuilder.statusCode(HttpStatus.CONFLICT.value());
+            commonResponseBuilder.message("Data already exist");
+            httpStatus = HttpStatus.CONFLICT;
+        } else {
+            commonResponseBuilder.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            commonResponseBuilder.message("Internal Server Error");
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return ResponseEntity.status(httpStatus).body(commonResponseBuilder.build());
+
     }
 
 }

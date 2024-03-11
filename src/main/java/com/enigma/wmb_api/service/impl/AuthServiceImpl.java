@@ -17,6 +17,7 @@ import com.enigma.wmb_api.util.ValidationUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -68,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RegisterResponse register(RegisterRequest request) {
+    public RegisterResponse register(RegisterRequest request) throws DataIntegrityViolationException {
         validationUtil.validate(request);
         Role role = roleService.getOrSave(UserRole.ROLE_CUSTOMER);
 
@@ -98,7 +99,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RegisterResponse registerAdmin(RegisterRequest request) {
+    public RegisterResponse registerAdmin(RegisterRequest request) throws DataIntegrityViolationException {
         validationUtil.validate(request);
         List<Role> listRole = List.of(
                 roleService.getOrSave(UserRole.ROLE_ADMIN),
