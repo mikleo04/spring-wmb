@@ -14,4 +14,5 @@ public interface UserService extends UserDetailsService {
     Page<UserAccountResponse> getAll(SearchUSerAccountResquest request);
     UserAccount getByContext();
     void updateEmailOrPassword(UpdateUserAccountRequest request);
+    void updateIsEnable(String id, Boolean isEnable);
 }

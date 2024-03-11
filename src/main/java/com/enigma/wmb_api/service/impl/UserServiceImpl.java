@@ -9,6 +9,7 @@ import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.repository.UserAccountRepository;
 import com.enigma.wmb_api.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +28,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserAccountRepository userAccountRepository;
@@ -99,6 +101,14 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access not allowed");
         }
 
+    }
+
+    @Override
+    public void updateIsEnable(String id, Boolean isEnable) {
+        getByuserId(id);
+        log.info("Masuk ni id nya {}", id);
+        userAccountRepository.updateIsEnable(id, isEnable);
+        log.info("Masuk ni id nya {}", id);
     }
 
 }

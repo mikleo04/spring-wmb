@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -102,9 +103,11 @@ public class CustomerServiceImpl implements CustomerService {
                 .build();
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(String id) {
-        getById(id);
+        Customer customer = getById(id);
         repository.deleteById(id);
+        userService.updateIsEnable(customer.getUserAccount().getId(), false);
     }
 }
