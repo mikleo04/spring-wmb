@@ -99,9 +99,13 @@ public class MenuServiceImpl implements MenuService {
         return convertMenuToMenuResponse(menu);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void delete(String id) {
-        getOneById(id);
+        Menu menu = getById(id);
+        menu.getImages().forEach(image -> {
+            imageService.deleteById(image.getId());
+        });
         repository.deleteById(id);
     }
 
