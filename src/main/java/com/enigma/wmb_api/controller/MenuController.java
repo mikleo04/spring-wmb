@@ -9,6 +9,8 @@ import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.service.MenuService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+@Tag(name = "Menu", description = "The Menu API. Contains all the operations that can be performed on a menu.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = UrlApi.MENU_API)
@@ -28,6 +31,7 @@ public class MenuController {
     private final MenuService service;
     private final ObjectMapper objectMapper;
 
+    @Operation(summary = "Create menu")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -59,6 +63,7 @@ public class MenuController {
 
     }
 
+    @Operation(summary = "Get menu by id")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping("{id}")
     public ResponseEntity<CommonResponse<MenuResponse>> getMenuById(@PathVariable String id) {
@@ -73,6 +78,7 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
+    @Operation(summary = "Get all menu")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<MenuResponse>>> getAllMenu(
@@ -108,6 +114,7 @@ public class MenuController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update menu")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PutMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
@@ -138,6 +145,7 @@ public class MenuController {
         }
     }
 
+    @Operation(summary = "Delete menu by id")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<CommonResponse<String>> deleteMenu(@PathVariable String id) {
@@ -151,6 +159,7 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @Operation(description = "Update status menu by id")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PutMapping("{id}")
     public ResponseEntity<CommonResponse<String>> updateStatusMenu(@PathVariable String id, @RequestParam(name = "status") Boolean status) {

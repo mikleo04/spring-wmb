@@ -8,6 +8,8 @@ import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.dto.response.TableResponse;
 import com.enigma.wmb_api.entity.DiningTable;
 import com.enigma.wmb_api.service.TableService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Table", description = "The Table API. Contains the operations that can be performed on a table.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = UrlApi.TABLE_API)
@@ -24,6 +27,7 @@ public class TableController {
 
     private final TableService service;
 
+    @Operation(summary = "Creat table")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @PostMapping
     public ResponseEntity<CommonResponse<TableResponse>> creatTable(@RequestBody TableRequest request) {
@@ -41,6 +45,7 @@ public class TableController {
                 .body(response);
     }
 
+    @Operation(summary = "Get table by id")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping("{id}")
     public ResponseEntity<CommonResponse<TableResponse>> getTableByid(@PathVariable String id) {
@@ -56,6 +61,7 @@ public class TableController {
                 .body(response);
     }
 
+    @Operation(summary = "Get all tables")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @GetMapping
     public ResponseEntity<CommonResponse<List<TableResponse>>> getAllTable(
@@ -91,9 +97,11 @@ public class TableController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Delete table by id")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @DeleteMapping("{id}")
     public ResponseEntity<CommonResponse<String>> deleteTable(@PathVariable String id) {
+        service.delete(id);
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .statusCode(HttpStatus.OK.value())
                 .message("Success delete table")

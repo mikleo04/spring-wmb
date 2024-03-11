@@ -37,6 +37,7 @@ public class SecurityConfiguration {
                     req.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                             .requestMatchers("/api/auth/**").permitAll()
                             .requestMatchers(HttpMethod.POST,"/api/transactions/status").permitAll()
+                            .requestMatchers("/api-docs/**", "/swagger-ui/**").permitAll()
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -6,18 +6,19 @@ import com.enigma.wmb_api.dto.request.UpdateUserAccountRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.dto.response.UserAccountResponse;
-import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "User Account", description = "The User Account API. Contains all the operations that can be performed on an account.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = UrlApi.USER_ACCOUT_API)
@@ -25,6 +26,7 @@ public class UserAccountController {
 
     private final UserService userService;
 
+    @Operation(summary = "Update user account")
     @PutMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -39,11 +41,12 @@ public class UserAccountController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get user account by id")
     @GetMapping(
             path = "{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<CommonResponse<UserAccountResponse>> getAccountByIs(@PathVariable(name = "id") String id) {
+    public ResponseEntity<CommonResponse<UserAccountResponse>> getAccountById(@PathVariable(name = "id") String id) {
         UserAccountResponse userAccount = userService.getOneById(id);
         CommonResponse<UserAccountResponse> response = CommonResponse.<UserAccountResponse>builder()
                 .statusCode(HttpStatus.OK.value())
@@ -53,6 +56,7 @@ public class UserAccountController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get all user account")
     @GetMapping(
             produces = MediaType.APPLICATION_JSON_VALUE
     )

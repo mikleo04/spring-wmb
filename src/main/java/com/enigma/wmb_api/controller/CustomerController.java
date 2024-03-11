@@ -7,6 +7,8 @@ import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.CustomerResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.service.CustomerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,12 +19,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Customer", description = "The Customer API. Contains all the operations that can be performed on a customer.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = UrlApi.CUSTOMER_API)
 public class CustomerController {
+
     private final CustomerService service;
 
+    @Operation(summary = "Get customer by id")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping(path = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<CustomerResponse>> getCustomerById(@PathVariable String id) {
@@ -37,6 +42,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get all customer")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CommonResponse<List<CustomerResponse>>> getAllCustomer(
@@ -73,6 +79,7 @@ public class CustomerController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update customer")
     @PutMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -89,6 +96,7 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
+    @Operation(summary = "Delete customer by id")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     @DeleteMapping(path = "{id}")
     public ResponseEntity<CommonResponse<String>> deleteCustomer(@PathVariable String id) {

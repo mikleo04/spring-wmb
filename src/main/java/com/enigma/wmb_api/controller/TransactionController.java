@@ -9,6 +9,8 @@ import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.dto.response.TransactionResponse;
 import com.enigma.wmb_api.service.TransactionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Transaction", description = "The Transaction API. Contains all the operations that can be performed on a transaction.")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = UrlApi.TRANSACTION_API)
@@ -27,6 +30,7 @@ public class TransactionController {
 
     private final TransactionService service;
 
+    @Operation(summary = "Create transaction")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'CUSTOMER')")
     @PostMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -44,6 +48,7 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "Get all transaction")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping(
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -82,6 +87,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get transaction by id")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping(
             path = "{id}",
@@ -99,6 +105,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Update status transaction after payment")
     @PostMapping("/status")
     public ResponseEntity<CommonResponse<?>> updateStatusTransaction(
             @RequestBody Map<String, Object> request
