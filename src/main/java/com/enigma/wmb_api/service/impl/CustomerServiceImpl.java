@@ -32,6 +32,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final ValidationUtil validationUtil;
     private final UserService userService;
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Customer creat(Customer customer) {
         validationUtil.validate(customer);
@@ -44,13 +45,7 @@ public class CustomerServiceImpl implements CustomerService {
         Optional<Customer> customer = repository.findById(id);
         if (customer.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
 
-        return CustomerResponse.builder()
-                .id(customer.get().getId())
-                .name(customer.get().getName())
-                .mobilePhoneNumber(customer.get().getMobilePhoneNumber())
-                .isMember(customer.get().getIsMember())
-                .userAccountId(customer.get().getUserAccount().getId())
-                .build();
+        return convertCustomerToCustomerResponse(customer.get());
     }
 
     @Transactional(readOnly = true)
@@ -68,15 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Page<Customer> customers = repository.findAll(pageable);
 
-        return customers.map(customer -> {
-            return CustomerResponse.builder()
-                    .id(customer.getId())
-                    .name(customer.getName())
-                    .mobilePhoneNumber(customer.getMobilePhoneNumber())
-                    .isMember(customer.getIsMember())
-                    .userAccountId(customer.getUserAccount().getId())
-                    .build();
-        });
+        return customers.map(this::convertCustomerToCustomerResponse);
 
     }
 
@@ -98,13 +85,7 @@ public class CustomerServiceImpl implements CustomerService {
 
         Customer customerResponse = repository.saveAndFlush(customerSelected);
 
-        return CustomerResponse.builder()
-                .id(customerResponse.getId())
-                .name(customerResponse.getName())
-                .mobilePhoneNumber(customerResponse.getMobilePhoneNumber())
-                .isMember(customerResponse.getIsMember())
-                .userAccountId(customerResponse.getUserAccount().getId())
-                .build();
+        return convertCustomerToCustomerResponse(customerResponse);
     }
 
 
@@ -115,4 +96,15 @@ public class CustomerServiceImpl implements CustomerService {
         repository.deleteById(id);
         userService.updateIsEnable(customer.getUserAccount().getId(), false);
     }
+
+    private CustomerResponse convertCustomerToCustomerResponse(Customer customer) {
+        return CustomerResponse.builder()
+                .id(customer.getId())
+                .name(customer.getName())
+                .mobilePhoneNumber(customer.getMobilePhoneNumber())
+                .isMember(customer.getIsMember())
+                .userAccountId(customer.getUserAccount().getId())
+                .build();
+    }
+
 }

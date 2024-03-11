@@ -38,10 +38,7 @@ public class TableServiceImpl implements TableService {
 
         DiningTable tableResponse = repository.saveAndFlush(table);
 
-        return TableResponse.builder()
-                .id(tableResponse.getId())
-                .name(tableResponse.getName())
-                .build();
+        return convertTableToTableResponse(tableResponse);
     }
 
     @Transactional(readOnly = true)
@@ -51,10 +48,7 @@ public class TableServiceImpl implements TableService {
         if (table.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Table not found");
         DiningTable tableResponse = table.get();
 
-        return TableResponse.builder()
-                .id(tableResponse.getId())
-                .name(tableResponse.getName())
-                .build();
+        return convertTableToTableResponse(tableResponse);
 
     }
 
@@ -70,12 +64,7 @@ public class TableServiceImpl implements TableService {
 
         Page<DiningTable> tableResponses = repository.findAll(pageable);
 
-        return tableResponses.map(table -> {
-            return TableResponse.builder()
-                    .id(table.getId())
-                    .name(table.getName())
-                    .build();
-        });
+        return tableResponses.map(this::convertTableToTableResponse);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -84,4 +73,12 @@ public class TableServiceImpl implements TableService {
         getById(id);
         repository.deleteById(id);
     }
+
+    private TableResponse convertTableToTableResponse(DiningTable table) {
+        return TableResponse.builder()
+                .id(table.getId())
+                .name(table.getName())
+                .build();
+    }
+
 }
