@@ -7,9 +7,12 @@ import com.enigma.wmb_api.dto.response.ImageResponse;
 import com.enigma.wmb_api.dto.response.MenuResponse;
 import com.enigma.wmb_api.entity.Image;
 import com.enigma.wmb_api.entity.Menu;
+import com.enigma.wmb_api.entity.Transaction;
 import com.enigma.wmb_api.repository.MenuRepository;
 import com.enigma.wmb_api.service.ImageService;
 import com.enigma.wmb_api.service.MenuService;
+import com.enigma.wmb_api.specification.MenuSpecification;
+import com.enigma.wmb_api.specification.TransactionSpecification;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,9 +80,11 @@ public class MenuServiceImpl implements MenuService {
         if (request.getPage() <= 0) request.setPage(1);
 
         Sort sorting = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
-
         Pageable pageable = PageRequest.of(request.getPage()-1, request.getSize(), sorting);
-        return repository.findAll(pageable).map(this::convertMenuToMenuResponse);
+
+        Specification<Menu> specification = MenuSpecification.getSpecification(request);
+
+        return repository.findAll(specification, pageable).map(this::convertMenuToMenuResponse);
     }
 
     @Transactional(rollbackFor = Exception.class)

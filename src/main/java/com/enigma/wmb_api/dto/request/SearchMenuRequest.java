@@ -15,4 +15,12 @@ public class SearchMenuRequest {
     private String sortBy;
 
     private String direction;
+
+    private String name;
+
+    private Boolean status;
+
+    private Integer maxPrice;
+
+    private Integer minPrice;
 }

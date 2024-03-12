@@ -85,13 +85,21 @@ public class MenuController {
         @RequestParam(name = "page", defaultValue = "1") Integer page,
         @RequestParam(name = "size", defaultValue = "10") Integer size,
         @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
-        @RequestParam(name = "direction", defaultValue = "ASC") String direction
+        @RequestParam(name = "direction", defaultValue = "ASC") String direction,
+        @RequestParam(name = "name", required = false) String name,
+        @RequestParam(name = "status", required = false) Boolean status,
+        @RequestParam(name = "minPrice", required = false) Integer minPrice,
+        @RequestParam(name = "maxPrice", required = false) Integer maxPrice
     ) {
         SearchMenuRequest request = SearchMenuRequest.builder()
                 .size(size)
                 .page(page)
                 .direction(direction)
                 .sortBy(sortBy)
+                .name(name)
+                .status(status)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
                 .build();
         Page<MenuResponse> menusResult = service.getAll(request);
 
