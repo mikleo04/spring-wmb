@@ -20,12 +20,16 @@ public class SearchTransactionRequest {
 
     private String direction;
 
-    private Date transDate;
+    private String date;
+
+    private String startDate;
+
+    private String endDate;
 
     private String customerId;
 
-    private String tableId;
+    private String transactionTypeId;
 
-    private TransactionType transactionTypeId;
+    private String transactionStatus;
 
 }

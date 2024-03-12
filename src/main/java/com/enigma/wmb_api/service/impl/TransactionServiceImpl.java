@@ -7,11 +7,13 @@ import com.enigma.wmb_api.dto.response.*;
 import com.enigma.wmb_api.entity.*;
 import com.enigma.wmb_api.repository.TransactionRepository;
 import com.enigma.wmb_api.service.*;
+import com.enigma.wmb_api.specification.TransactionSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,12 +132,12 @@ public class TransactionServiceImpl implements TransactionService {
     public Page<TransactionResponse> getAll(SearchTransactionRequest request) {
 
         if (request.getPage() <= 0) request.setPage(1);
-
         Sort sorting = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
-
         Pageable pageable = PageRequest.of(request.getPage()-1, request.getSize(), sorting);
 
-        Page<Transaction> transactions = repository.findAll(pageable);
+        Specification<Transaction> specification = TransactionSpecification.getSpecification(request);
+
+        Page<Transaction> transactions = repository.findAll(specification, pageable);
 
         return transactions.map(transaction -> {
             List<TransactionDetailResponse> transactionDetailResponses = transaction.getTransactionDetails().stream()

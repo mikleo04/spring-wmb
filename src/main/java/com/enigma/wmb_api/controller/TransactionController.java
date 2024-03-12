@@ -1,6 +1,7 @@
 package com.enigma.wmb_api.controller;
 
 import com.enigma.wmb_api.constant.TransactionStatus;
+import com.enigma.wmb_api.constant.TransactionType;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.SearchTransactionRequest;
 import com.enigma.wmb_api.dto.request.TransactionRequest;
@@ -9,6 +10,7 @@ import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
 import com.enigma.wmb_api.dto.response.TransactionResponse;
 import com.enigma.wmb_api.service.TransactionService;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -57,13 +59,25 @@ public class TransactionController {
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "10") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "transDate") String sortBy,
-            @RequestParam(name = "direction", defaultValue = "ASC") String direction
+            @RequestParam(name = "direction", defaultValue = "ASC") String direction,
+            @RequestParam(name = "date", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String date,
+            @RequestParam(name = "startDate", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String startDate,
+            @RequestParam(name = "endDate", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String endDate,
+            @RequestParam(name = "customerId", required = false) String customerId,
+            @RequestParam(name = "transTypeId", required = false) String transTypeId,
+            @RequestParam(name = "transStatus", required = false) String transStatus
     ) {
         SearchTransactionRequest request = SearchTransactionRequest.builder()
                 .page(page)
                 .size(size)
                 .sortBy(sortBy)
                 .direction(direction)
+                .date(date)
+                .startDate(startDate)
+                .endDate(endDate)
+                .customerId(customerId)
+                .transactionTypeId(transTypeId)
+                .transactionStatus(transStatus)
                 .build();
 
         Page<TransactionResponse> transactionsResult = service.getAll(request);
