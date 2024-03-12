@@ -19,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -173,6 +175,50 @@ public class TransactionServiceImpl implements TransactionService {
                     .payment(paymentResponse)
                     .build();
         });
+    }
+
+    @Override
+    public List<ReportCsvResponse> getReportCsv(SearchTransactionRequest request) {
+        Specification<Transaction> specification = TransactionSpecification.getSpecification(request);
+        List<Transaction> transactions = repository.findAll(specification);
+
+        List<ReportCsvResponse> responses = new ArrayList<>();
+
+        responses.add(ReportCsvResponse.builder()
+                .id("ID")
+                .customer("Customer")
+                .transType("Transaction Type")
+                .menu("Menu")
+                .price("Price")
+                .table("Table")
+                .transactionStatus("Transaction Status")
+                .transDate("Transaction Date")
+                .build());
+
+        transactions.forEach(transaction -> {
+            transaction.getTransactionDetails().forEach(transactionDetail -> {
+
+                String tableName = null;
+
+                if (transaction.getTable() != null) {
+                    tableName = transaction.getTable().getName();
+                }
+
+                responses.add(ReportCsvResponse.builder()
+                        .id(transaction.getId())
+                        .customer(transaction.getCustomer().getName())
+                        .transType(transaction.getTransType().getId().toString())
+                        .menu(transactionDetail.getMenu().getName())
+                        .price(transactionDetail.getMenuPrice().toString())
+                        .table(tableName)
+                        .transactionStatus(transaction.getPayment().getTransactionStatus().toString())
+                        .transDate(transaction.getTransDate().toString())
+                        .build());
+            });
+        });
+
+        return responses;
+
     }
 
     @Transactional(readOnly = true)

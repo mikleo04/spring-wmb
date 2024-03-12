@@ -8,19 +8,30 @@ import com.enigma.wmb_api.dto.request.TransactionRequest;
 import com.enigma.wmb_api.dto.request.UpdateStatusTransactionRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
+import com.enigma.wmb_api.dto.response.ReportCsvResponse;
 import com.enigma.wmb_api.dto.response.TransactionResponse;
+import com.enigma.wmb_api.entity.Transaction;
 import com.enigma.wmb_api.service.TransactionService;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.opencsv.CSVWriter;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -136,6 +147,43 @@ public class TransactionController {
                 .message("Success update status transaction")
                 .build());
 
+    }
+
+    @Operation(summary = "Download report transaction")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @GetMapping(path = "/report-csv")
+    public void donwloadReportTransaction(
+            HttpServletResponse response,
+            @RequestParam(name = "date", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String date,
+            @RequestParam(name = "startDate", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String startDate,
+            @RequestParam(name = "endDate", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String endDate,
+            @RequestParam(name = "transTypeId", required = false) String transTypeId,
+            @RequestParam(name = "transStatus", required = false) String transStatus
+    ) throws IOException, CsvRequiredFieldEmptyException, CsvDataTypeMismatchException {
+
+        SearchTransactionRequest request = SearchTransactionRequest.builder()
+                .date(date)
+                .startDate(startDate)
+                .endDate(endDate)
+                .transactionTypeId(transTypeId)
+                .transactionStatus(transStatus)
+                .build();
+
+        List<ReportCsvResponse> reportCsv = service.getReportCsv(request);
+
+        String fileName = "Report_transaction.csv";
+
+        response.setContentType("text/csv");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\""+fileName+"\"");
+
+        StatefulBeanToCsv<ReportCsvResponse> writer = new StatefulBeanToCsvBuilder<ReportCsvResponse>(response.getWriter())
+                .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
+                .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
+                .withOrderedResults(false)
+                .build();
+
+        writer.write(reportCsv);
     }
 
 }
