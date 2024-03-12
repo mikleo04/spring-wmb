@@ -74,16 +74,10 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse update(CustomerRequest request) {
         validationUtil.validate(request);
         Customer customerSelected = getById(request.getId());
-        UserAccount userAccount = userService.getByContext();
-        List<String> roles = userAccount.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 
-        if (customerSelected.getUserAccount().getId().equals(userAccount.getId()) || roles.contains(UserRole.ROLE_ADMIN.name()) || roles.contains(UserRole.ROLE_SUPER_ADMIN.name())) {
-            customerSelected.setName(request.getName());
-            customerSelected.setIsMember(request.getIsMember());
-            customerSelected.setMobilePhoneNumber(request.getMobilePhoneNumber());
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Acces not allowed");
-        }
+        customerSelected.setName(request.getName());
+        customerSelected.setIsMember(request.getIsMember());
+        customerSelected.setMobilePhoneNumber(request.getMobilePhoneNumber());
 
         Customer customerResponse = repository.saveAndFlush(customerSelected);
 

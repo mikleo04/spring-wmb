@@ -84,6 +84,7 @@ public class CustomerController {
     }
 
     @Operation(summary = "Update customer")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN') or @accountValidation.validationAccountCustomer(#request)")
     @PutMapping(
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE

@@ -91,22 +91,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateEmailOrPassword(UpdateUserAccountRequest request) {
 
-        String userAccountId = request.getUserAccountId();
-        UserAccount userAccountLogin = getByContext();
-        List<String> roles = userAccountLogin.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-
-        if (userAccountLogin.getId().equals(userAccountId) || roles.contains(UserRole.ROLE_ADMIN.name()) || roles.contains(UserRole.ROLE_SUPER_ADMIN.name())) {
-            UserAccount userAccount = getByuserId(request.getUserAccountId());
-            if (request.getEmail() != null) {
-                userAccount.setEmail(request.getEmail());
-            }
-            if (request.getPassword() != null) {
-                userAccount.setPassword(passwordEncoder.encode(request.getPassword()));
-            }
-            userAccountRepository.saveAndFlush(userAccount);
-        } else {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access not allowed");
+        UserAccount userAccount = getByuserId(request.getUserAccountId());
+        if (request.getEmail() != null) {
+            userAccount.setEmail(request.getEmail());
         }
+        if (request.getPassword() != null) {
+            userAccount.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        userAccountRepository.saveAndFlush(userAccount);
 
     }
 
