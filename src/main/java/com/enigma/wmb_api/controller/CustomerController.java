@@ -49,13 +49,17 @@ public class CustomerController {
             @RequestParam(name = "page", defaultValue = "1") Integer page,
             @RequestParam(name = "size", defaultValue = "10") Integer size,
             @RequestParam(name = "sortBy", defaultValue = "name") String sortBy,
-            @RequestParam(name = "direction", defaultValue = "ASC") String direction
+            @RequestParam(name = "direction", defaultValue = "ASC") String direction,
+            @RequestParam(name = "name", required = false) String name,
+            @RequestParam(name = "isMember", required = false) Boolean isMember
     ) {
         SearchCustomerRequest request = SearchCustomerRequest.builder()
                 .sortBy(sortBy)
                 .direction(direction)
                 .page(page)
                 .size(size)
+                .name(name)
+                .isMember(isMember)
                 .build();
 
         Page<CustomerResponse> customersResult = service.getAll(request);

@@ -15,4 +15,8 @@ public class SearchCustomerRequest {
     private String sortBy;
 
     private String direction;
+
+    private String name;
+
+    private Boolean isMember;
 }

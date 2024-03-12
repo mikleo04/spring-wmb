@@ -9,12 +9,14 @@ import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.repository.CustomerRepository;
 import com.enigma.wmb_api.service.CustomerService;
 import com.enigma.wmb_api.service.UserService;
+import com.enigma.wmb_api.specification.CustomerSpecification;
 import com.enigma.wmb_api.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -58,10 +60,10 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Page<CustomerResponse> getAll(SearchCustomerRequest request) {
         Sort sorting = Sort.by(Sort.Direction.fromString(request.getDirection()), request.getSortBy());
-
         Pageable pageable = PageRequest.of(request.getPage()-1, request.getSize(), sorting);
 
-        Page<Customer> customers = repository.findAll(pageable);
+        Specification<Customer> specification = CustomerSpecification.getSpecification(request);
+        Page<Customer> customers = repository.findAll(specification, pageable);
 
         return customers.map(this::convertCustomerToCustomerResponse);
 
