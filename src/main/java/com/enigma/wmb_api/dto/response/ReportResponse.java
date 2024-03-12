@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @Getter
 @Builder
-public class ReportCsvResponse {
+public class ReportResponse {
 
     @CsvBindByPosition(position = 1)
     private String id;

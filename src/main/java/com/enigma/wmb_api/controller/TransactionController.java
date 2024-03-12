@@ -1,16 +1,14 @@
 package com.enigma.wmb_api.controller;
 
 import com.enigma.wmb_api.constant.TransactionStatus;
-import com.enigma.wmb_api.constant.TransactionType;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.SearchTransactionRequest;
 import com.enigma.wmb_api.dto.request.TransactionRequest;
 import com.enigma.wmb_api.dto.request.UpdateStatusTransactionRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.PagingResponse;
-import com.enigma.wmb_api.dto.response.ReportCsvResponse;
+import com.enigma.wmb_api.dto.response.ReportResponse;
 import com.enigma.wmb_api.dto.response.TransactionResponse;
-import com.enigma.wmb_api.entity.Transaction;
 import com.enigma.wmb_api.service.TransactionService;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.opencsv.CSVWriter;
@@ -31,6 +29,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -152,7 +152,7 @@ public class TransactionController {
     @Operation(summary = "Download report transaction")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     @GetMapping(path = "/report-csv")
-    public void donwloadReportTransaction(
+    public void donwloadReportTransactionCsv(
             HttpServletResponse response,
             @RequestParam(name = "date", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String date,
             @RequestParam(name = "startDate", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String startDate,
@@ -169,7 +169,17 @@ public class TransactionController {
                 .transactionStatus(transStatus)
                 .build();
 
-        List<ReportCsvResponse> reportCsv = service.getReportCsv(request);
+        List<ReportResponse> reportCsv = service.getReportCsv(request);
+        reportCsv.add(0, ReportResponse.builder()
+                .id("ID")
+                .customer("Customer")
+                .transType("Transaction Type")
+                .menu("Menu")
+                .price("Price")
+                .table("Table")
+                .transactionStatus("Transaction Status")
+                .transDate("Transaction Date")
+                .build());
 
         String fileName = "Report_transaction.csv";
 
@@ -177,13 +187,42 @@ public class TransactionController {
         response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=\""+fileName+"\"");
 
-        StatefulBeanToCsv<ReportCsvResponse> writer = new StatefulBeanToCsvBuilder<ReportCsvResponse>(response.getWriter())
+        StatefulBeanToCsv<ReportResponse> writer = new StatefulBeanToCsvBuilder<ReportResponse>(response.getWriter())
                 .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
                 .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
                 .withOrderedResults(false)
                 .build();
 
         writer.write(reportCsv);
+    }
+
+    @GetMapping("/report-pdf")
+    public void donwloadReportTransactionPdf(
+            HttpServletResponse response,
+            @RequestParam(name = "date", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String date,
+            @RequestParam(name = "startDate", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String startDate,
+            @RequestParam(name = "endDate", required = false) @JsonFormat(pattern = "yyyy-MM-dd") String endDate,
+            @RequestParam(name = "transTypeId", required = false) String transTypeId,
+            @RequestParam(name = "transStatus", required = false) String transStatus
+    ) throws IOException {
+
+        SearchTransactionRequest request = SearchTransactionRequest.builder()
+                .date(date)
+                .startDate(startDate)
+                .endDate(endDate)
+                .transactionTypeId(transTypeId)
+                .transactionStatus(transStatus)
+                .build();
+
+        response.setContentType("application/pdf");
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormat.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=users_" + currentDateTime + ".pdf";
+        response.setHeader(headerKey, headerValue);
+
+        service.getReportPdf(response, request);
     }
 
 }

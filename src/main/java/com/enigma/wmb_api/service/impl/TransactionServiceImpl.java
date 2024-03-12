@@ -5,9 +5,16 @@ import com.enigma.wmb_api.dto.request.TransactionRequest;
 import com.enigma.wmb_api.dto.request.UpdateStatusTransactionRequest;
 import com.enigma.wmb_api.dto.response.*;
 import com.enigma.wmb_api.entity.*;
+import com.enigma.wmb_api.entity.Menu;
 import com.enigma.wmb_api.repository.TransactionRepository;
 import com.enigma.wmb_api.service.*;
 import com.enigma.wmb_api.specification.TransactionSpecification;
+import com.lowagie.text.*;
+import com.lowagie.text.Font;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,11 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -178,22 +186,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<ReportCsvResponse> getReportCsv(SearchTransactionRequest request) {
+    public List<ReportResponse> getReportCsv(SearchTransactionRequest request) {
         Specification<Transaction> specification = TransactionSpecification.getSpecification(request);
         List<Transaction> transactions = repository.findAll(specification);
 
-        List<ReportCsvResponse> responses = new ArrayList<>();
-
-        responses.add(ReportCsvResponse.builder()
-                .id("ID")
-                .customer("Customer")
-                .transType("Transaction Type")
-                .menu("Menu")
-                .price("Price")
-                .table("Table")
-                .transactionStatus("Transaction Status")
-                .transDate("Transaction Date")
-                .build());
+        List<ReportResponse> responses = new ArrayList<>();
 
         transactions.forEach(transaction -> {
             transaction.getTransactionDetails().forEach(transactionDetail -> {
@@ -204,21 +201,20 @@ public class TransactionServiceImpl implements TransactionService {
                     tableName = transaction.getTable().getName();
                 }
 
-                responses.add(ReportCsvResponse.builder()
+                responses.add(ReportResponse.builder()
                         .id(transaction.getId())
                         .customer(transaction.getCustomer().getName())
                         .transType(transaction.getTransType().getId().toString())
                         .menu(transactionDetail.getMenu().getName())
                         .price(transactionDetail.getMenuPrice().toString())
                         .table(tableName)
+                        .quantity(transactionDetail.getQuantity().toString())
                         .transactionStatus(transaction.getPayment().getTransactionStatus().toString())
                         .transDate(transaction.getTransDate().toString())
                         .build());
             });
         });
-
         return responses;
-
     }
 
     @Transactional(readOnly = true)
@@ -262,6 +258,87 @@ public class TransactionServiceImpl implements TransactionService {
 
         Payment payment = transaction.getPayment();
         payment.setTransactionStatus(request.getTransactionStatus());
+    }
+
+    @Override
+    public void getReportPdf(HttpServletResponse response, SearchTransactionRequest request) throws DocumentException, IOException {
+        Document document = new Document(PageSize.A4.rotate());
+        PdfWriter.getInstance(document, response.getOutputStream());
+
+        document.open();
+        Font font = FontFactory.getFont(FontFactory.HELVETICA_BOLD);
+        font.setSize(18);
+        font.setColor(Color.lightGray);
+
+        Paragraph p = new Paragraph("List Transactions", font);
+        p.setAlignment(Paragraph.ALIGN_CENTER);
+
+        document.add(p);
+
+        PdfPTable table = new PdfPTable(9);
+        table.setWidthPercentage(100f);
+        table.setWidths(new float[] {3.5f, 3.5f, 3.0f, 1.5f, 1.0f, 2.0f, 1.5f, 2.0f, 1.5f});
+        table.setSpacingBefore(10);
+
+        writeTableHeader(table);
+        writeTableData(table, request);
+
+        document.add(table);
+
+        document.close();
+    }
+
+    private void writeTableHeader(PdfPTable table) {
+        PdfPCell cell = new PdfPCell();
+        cell.setBackgroundColor(Color.BLUE);
+        cell.setPadding(5);
+
+        Font font = FontFactory.getFont(FontFactory.HELVETICA);
+        font.setColor(Color.WHITE);
+
+        cell.setPhrase(new Phrase("ID", font));
+
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("Transaction Date", font));
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("Customer", font));
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("Table", font));
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("Transaction Type", font));
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("Menu", font));
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("Quantity", font));
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("Price", font));
+        table.addCell(cell);
+
+        cell.setPhrase(new Phrase("Transaction Status", font));
+        table.addCell(cell);
+    }
+
+    private void writeTableData(PdfPTable table, SearchTransactionRequest request) {
+        List<ReportResponse> reports = getReportCsv(request);
+
+        for (ReportResponse report : reports) {
+            table.addCell(String.valueOf(report.getId()));
+            table.addCell(report.getTransDate());
+            table.addCell(report.getCustomer());
+            table.addCell(report.getTable());
+            table.addCell(report.getTransType());
+            table.addCell(report.getMenu());
+            table.addCell(report.getQuantity());
+            table.addCell(report.getPrice());
+            table.addCell(report.getTransactionStatus());
+        }
     }
 
 }
