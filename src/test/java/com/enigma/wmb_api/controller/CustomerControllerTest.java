@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UserRole;
 import com.enigma.wmb_api.dto.request.CustomerRequest;
 import com.enigma.wmb_api.dto.request.SearchCustomerRequest;
@@ -73,7 +74,7 @@ class CustomerControllerTest {
                 .andDo(result -> {
                     CommonResponse<CustomerResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get customer", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
     }
 
@@ -120,7 +121,7 @@ class CustomerControllerTest {
                 .andDo(result -> {
                     CommonResponse<List<CustomerResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get all customer", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
     }
 
@@ -156,7 +157,7 @@ class CustomerControllerTest {
                 .andDo(result -> {
                    CommonResponse<CustomerResponse> response =  objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(202, response.getStatusCode());
-                    assertEquals("Success update customer", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_UPDATE_DATA, response.getMessage());
                 });
     }
 
@@ -173,7 +174,7 @@ class CustomerControllerTest {
                 .andDo(result -> {
                     CommonResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(202, response.getStatusCode());
-                    assertEquals("Success delete customer", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_DELETE_DATA, response.getMessage());
                 });
     }
 }

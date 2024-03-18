@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.TransactionStatus;
 import com.enigma.wmb_api.constant.TransactionType;
 import com.enigma.wmb_api.dto.request.SearchTransactionRequest;
@@ -97,7 +98,7 @@ class TransactionControllerTest {
                 .andDo(result -> {
                     CommonResponse<TransactionResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(201, response.getStatusCode());
-                    assertEquals("Success create transaction", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_SAVE_DATA, response.getMessage());
                 });
 
     }
@@ -148,7 +149,7 @@ class TransactionControllerTest {
                 .andDo(result -> {
                     CommonResponse<List<TransactionResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get all transactions", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
 
     }
@@ -179,7 +180,7 @@ class TransactionControllerTest {
                 .andDo(result -> {
                     CommonResponse<TransactionResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get transaction", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
 
     }
@@ -210,17 +211,8 @@ class TransactionControllerTest {
                 .andDo(result -> {
                     CommonResponse<?> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success update status transaction", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_UPDATE_DATA, response.getMessage());
                 });
     }
 
-    @Test
-    @Disabled
-    void donwloadReportTransactionCsv() {
-    }
-
-    @Test
-    @Disabled
-    void donwloadReportTransactionPdf() {
-    }
 }

@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.SearchTableRequest;
 import com.enigma.wmb_api.dto.request.TableRequest;
 import com.enigma.wmb_api.dto.response.CommonResponse;
@@ -72,7 +73,7 @@ class TableControllerTest {
                 .andDo(result -> {
                     CommonResponse<TableResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(201, response.getStatusCode());
-                    assertEquals("Success create new table", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_SAVE_DATA, response.getMessage());
                 });
     }
 
@@ -97,7 +98,7 @@ class TableControllerTest {
                 .andDo(result -> {
                     CommonResponse<TableResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<CommonResponse<TableResponse>>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get table", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
     }
 
@@ -136,7 +137,7 @@ class TableControllerTest {
                 .andDo(result ->  {
                     CommonResponse<List<TableResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<CommonResponse<List<TableResponse>>>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get tables", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
     }
 
@@ -155,7 +156,7 @@ class TableControllerTest {
                 .andDo(result -> {
                     CommonResponse<String> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<CommonResponse<String>>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success delete table", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_DELETE_DATA, response.getMessage());
                 });
     }
 }

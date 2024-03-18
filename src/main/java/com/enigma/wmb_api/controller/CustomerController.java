@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.CustomerRequest;
 import com.enigma.wmb_api.dto.request.SearchCustomerRequest;
@@ -35,7 +36,7 @@ public class CustomerController {
 
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get customer")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(customerResult)
                 .build();
 
@@ -75,7 +76,7 @@ public class CustomerController {
 
         CommonResponse<List<CustomerResponse>> response = CommonResponse.<List<CustomerResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get all customer")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(customersResult.getContent())
                 .paging(pagingResponse)
                 .build();
@@ -94,7 +95,7 @@ public class CustomerController {
 
         CommonResponse<CustomerResponse> response = CommonResponse.<CustomerResponse>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
-                .message("Success update customer")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .data(customerResult)
                 .build();
 
@@ -108,7 +109,7 @@ public class CustomerController {
         service.delete(id);
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
-                .message("Success delete customer")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .build();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);

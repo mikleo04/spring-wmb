@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.response.JwtClaims;
 import com.enigma.wmb_api.entity.UserAccount;
 import com.enigma.wmb_api.service.JwtService;
@@ -45,7 +46,7 @@ public class JwtServiceImpl implements JwtService {
                     .withExpiresAt(Instant.now().plusSeconds(60 * 60))
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error while creating jwt token");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ResponseMessage.ERROR_CREATING_JWT);
         }
     }
 

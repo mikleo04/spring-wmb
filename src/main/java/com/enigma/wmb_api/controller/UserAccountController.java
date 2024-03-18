@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.SearchUSerAccountResquest;
 import com.enigma.wmb_api.dto.request.UpdateUserAccountRequest;
@@ -37,7 +38,7 @@ public class UserAccountController {
         userService.updateEmailOrPassword(request);
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success update account")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .build();
 
         return ResponseEntity.ok(response);
@@ -52,7 +53,7 @@ public class UserAccountController {
         UserAccountResponse userAccount = userService.getOneById(id);
         CommonResponse<UserAccountResponse> response = CommonResponse.<UserAccountResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get account")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(userAccount)
                 .build();
         return ResponseEntity.ok(response);
@@ -87,7 +88,7 @@ public class UserAccountController {
 
         CommonResponse<List<UserAccountResponse>> response = CommonResponse.<List<UserAccountResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Succes get all account")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(userAccountResult.getContent())
                 .paging(pagingResponse)
                 .build();

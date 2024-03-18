@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.TransactionType;
 import com.enigma.wmb_api.dto.response.TransTypeResponse;
 import com.enigma.wmb_api.entity.TransType;
@@ -25,7 +26,7 @@ public class TransTypeServiceImpl implements TransTypeService {
     public TransTypeResponse getById(TransactionType id) {
         Optional<TransType> transType = repository.findById(id);
 
-        if (transType.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction type not found");
+        if (transType.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
 
         return TransTypeResponse.builder()
                 .id(transType.get().getId())

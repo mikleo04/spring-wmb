@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UserRole;
 import com.enigma.wmb_api.dto.request.CustomerRequest;
 import com.enigma.wmb_api.dto.request.SearchCustomerRequest;
@@ -107,7 +108,7 @@ class CustomerServiceImplTest {
 
         //stubbing
         Mockito.when(customerRepository.findById(id))
-                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
 
         //When //Then
         assertThrows(ResponseStatusException.class, () -> {

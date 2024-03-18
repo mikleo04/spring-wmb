@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UserRole;
 import com.enigma.wmb_api.dto.request.LoginRequest;
 import com.enigma.wmb_api.dto.request.RegisterRequest;
@@ -74,7 +75,7 @@ class AuthControllerTest {
                 .andDo(result -> {
                     CommonResponse<RegisterResponse> response =objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(201, response.getStatusCode());
-                    assertEquals("Success cretae user", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_SAVE_DATA, response.getMessage());
                 });
     }
 
@@ -108,7 +109,7 @@ class AuthControllerTest {
                 .andDo(result -> {
                     CommonResponse<RegisterResponse> response =objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(201, response.getStatusCode());
-                    assertEquals("Succes create user admin", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_SAVE_DATA, response.getMessage());
                 });
     }
 
@@ -140,7 +141,7 @@ class AuthControllerTest {
                 .andDo(result -> {
                     CommonResponse<LoginResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Login success", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_LOGIN, response.getMessage());
                 });
     }
 }

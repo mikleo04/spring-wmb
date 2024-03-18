@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.LoginRequest;
 import com.enigma.wmb_api.dto.request.RegisterRequest;
@@ -37,7 +38,7 @@ public class AuthController {
 
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Success cretae user")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(registerResult)
                 .build();
 
@@ -55,7 +56,7 @@ public class AuthController {
 
         CommonResponse<RegisterResponse> response = CommonResponse.<RegisterResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Succes create user admin")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(registerResult)
                 .build();
 
@@ -73,7 +74,7 @@ public class AuthController {
 
         CommonResponse<LoginResponse> response = CommonResponse.<LoginResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Login success")
+                .message(ResponseMessage.SUCCESS_LOGIN)
                 .data(loginResult)
                 .build();
 

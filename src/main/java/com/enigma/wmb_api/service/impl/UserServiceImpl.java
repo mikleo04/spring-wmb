@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UserRole;
 import com.enigma.wmb_api.dto.request.SearchUSerAccountResquest;
 import com.enigma.wmb_api.dto.request.UpdateUserAccountRequest;
@@ -38,19 +39,19 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userAccountRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException("username not found"));
+        return userAccountRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(ResponseMessage.ERROR_USERNAME_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
     @Override
     public UserAccount getByuserId(String id) {
-        return userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        return userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)
     @Override
     public UserAccountResponse getOneById(String id) {
-        UserAccount userAccount = userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not foun"));
+        UserAccount userAccount = userAccountRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
         return UserAccountResponse.builder()
                 .id(userAccount.getId())
                 .email(userAccount.getEmail())
@@ -84,7 +85,7 @@ public class UserServiceImpl implements UserService {
     public UserAccount getByContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return userAccountRepository.findByEmail(authentication.getPrincipal().toString())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,ResponseMessage.ERROR_NOT_FOUND));
     }
 
     @Transactional(rollbackFor = Exception.class)

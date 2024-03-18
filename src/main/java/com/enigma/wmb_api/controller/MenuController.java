@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.MenuRequest;
 import com.enigma.wmb_api.dto.request.SearchMenuRequest;
@@ -50,13 +51,12 @@ public class MenuController {
             MenuResponse menuResponse = service.create(request);
 
             responseBuilder.statusCode(HttpStatus.CREATED.value());
-            responseBuilder.message("Success creat menu");
+            responseBuilder.message(ResponseMessage.SUCCESS_SAVE_DATA);
             responseBuilder.data(menuResponse);
             return ResponseEntity.status(HttpStatus.CREATED).body(responseBuilder.build());
 
         } catch (Exception e) {
-            e.printStackTrace();
-            responseBuilder.message("Internal server error woi");
+            responseBuilder.message(ResponseMessage.ERROR_INTERNAL_SERVER);
             responseBuilder.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBuilder.build());
         }
@@ -71,7 +71,7 @@ public class MenuController {
 
         CommonResponse<MenuResponse> response = CommonResponse.<MenuResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get menu")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(menuResult)
                 .build();
 
@@ -114,7 +114,7 @@ public class MenuController {
 
         CommonResponse<List<MenuResponse>> response = CommonResponse.<List<MenuResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get menus")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(menusResult.getContent())
                 .paging(pagingResponse)
                 .build();
@@ -141,13 +141,12 @@ public class MenuController {
             MenuResponse menuResponse = service.update(request);
 
             responseBuilder.statusCode(HttpStatus.OK.value());
-            responseBuilder.message("Success update menu");
+            responseBuilder.message(ResponseMessage.SUCCESS_UPDATE_DATA);
             responseBuilder.data(menuResponse);
             return ResponseEntity.status(HttpStatus.OK).body(responseBuilder.build());
 
         } catch (Exception e) {
-            e.printStackTrace();
-            responseBuilder.message("Internal server error woi");
+            responseBuilder.message(ResponseMessage.ERROR_INTERNAL_SERVER);
             responseBuilder.statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBuilder.build());
         }
@@ -161,7 +160,7 @@ public class MenuController {
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
-                .message("Success delete menu")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .build();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
@@ -175,7 +174,7 @@ public class MenuController {
 
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .statusCode(HttpStatus.ACCEPTED.value())
-                .message("Succes update status menu")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .build();
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);

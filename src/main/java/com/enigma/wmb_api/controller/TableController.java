@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.SearchTableRequest;
 import com.enigma.wmb_api.dto.request.TableRequest;
@@ -36,7 +37,7 @@ public class TableController {
 
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Success create new table")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(tableResult)
                 .build();
 
@@ -52,7 +53,7 @@ public class TableController {
         TableResponse tableResult = service.getById(id);
         CommonResponse<TableResponse> response = CommonResponse.<TableResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get table")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(tableResult)
                 .build();
 
@@ -89,7 +90,7 @@ public class TableController {
 
         CommonResponse<List<TableResponse>> response = CommonResponse.<List<TableResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get tables")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(tablesResult.getContent())
                 .paging(pagingResponse)
                 .build();
@@ -104,7 +105,7 @@ public class TableController {
         service.delete(id);
         CommonResponse<String> response = CommonResponse.<String>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success delete table")
+                .message(ResponseMessage.SUCCESS_DELETE_DATA)
                 .build();
 
         return ResponseEntity.ok(response);

@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.SearchTableRequest;
 import com.enigma.wmb_api.dto.request.TableRequest;
 import com.enigma.wmb_api.dto.response.TableResponse;
@@ -45,7 +46,7 @@ public class TableServiceImpl implements TableService {
     @Override
     public TableResponse getById(String id) {
         Optional<DiningTable> table = repository.findById(id);
-        if (table.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Table not found");
+        if (table.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
         DiningTable tableResponse = table.get();
 
         return convertTableToTableResponse(tableResponse);

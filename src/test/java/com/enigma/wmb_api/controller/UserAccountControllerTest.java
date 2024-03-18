@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UserRole;
 import com.enigma.wmb_api.dto.request.SearchUSerAccountResquest;
 import com.enigma.wmb_api.dto.request.UpdateUserAccountRequest;
@@ -66,7 +67,7 @@ class UserAccountControllerTest {
                 .andDo(result -> {
                     CommonResponse<String> response =objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success update account", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_UPDATE_DATA, response.getMessage());
                 });
     }
 
@@ -94,7 +95,7 @@ class UserAccountControllerTest {
                 .andDo(result -> {
                     CommonResponse<UserAccountResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get account", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
     }
 
@@ -140,7 +141,7 @@ class UserAccountControllerTest {
                 .andDo(result -> {
                     CommonResponse<List<UserAccountResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Succes get all account", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
     }
 }

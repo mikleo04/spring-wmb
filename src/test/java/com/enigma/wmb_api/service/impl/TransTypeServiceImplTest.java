@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.TransactionType;
 import com.enigma.wmb_api.dto.response.TransTypeResponse;
 import com.enigma.wmb_api.entity.TransType;
@@ -61,7 +62,7 @@ class TransTypeServiceImplTest {
 
         // stubbing
         Mockito.when(transTypeRepository.findById(id))
-                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction type not found"));
+                .thenThrow(new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
 
         //When //Then
        assertThrows(ResponseStatusException.class, () -> {

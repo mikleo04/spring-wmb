@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.dto.request.SearchTransactionRequest;
 import com.enigma.wmb_api.dto.request.TransactionRequest;
 import com.enigma.wmb_api.dto.request.UpdateStatusTransactionRequest;
@@ -223,7 +224,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         Optional<Transaction> transaction = repository.findById(id);
 
-        if (transaction.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found");
+        if (transaction.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
 
         List<TransactionDetailResponse> detailResponses = transaction.get().getTransactionDetails().stream()
                 .map(transactionDetail -> {
@@ -253,7 +254,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public void updateStatus(UpdateStatusTransactionRequest request) {
         Transaction transaction = repository.findById(request.getOrderId()).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "transaction not found")
+                new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND)
         );
 
         Payment payment = transaction.getPayment();

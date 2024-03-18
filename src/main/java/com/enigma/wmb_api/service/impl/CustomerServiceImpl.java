@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.UserRole;
 import com.enigma.wmb_api.dto.request.CustomerRequest;
 import com.enigma.wmb_api.dto.request.SearchCustomerRequest;
@@ -45,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse getOneById(String id) {
         Optional<Customer> customer = repository.findById(id);
-        if (customer.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
+        if (customer.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
 
         return convertCustomerToCustomerResponse(customer.get());
     }
@@ -53,7 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     @Override
     public Customer getById(String id) {
-        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
     }
 
     @Transactional(readOnly = true)

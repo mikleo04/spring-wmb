@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.service.impl;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.entity.Image;
 import com.enigma.wmb_api.entity.Menu;
 import com.enigma.wmb_api.repository.ImageRepository;
@@ -55,7 +56,7 @@ public class ImageServiceImpl implements ImageService {
             try {
 
                 if (!List.of("image/jpeg", "image/png", "image/jpg", "image/svg+xml").contains(multipartFile.getContentType())) {
-                    throw new ConstraintViolationException("Invalid Content Type", null);
+                    throw new ConstraintViolationException(ResponseMessage.ERROR_INVALID_CONTENT_TYPE, null);
                 }
 
                 String fileName = UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
@@ -83,13 +84,13 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Resource getById(String id) {
         try {
-            Image image = imageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "image not fount"));
+            Image image = imageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
             Path filePath = Paths.get(image.getPath());
-            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "INternal server error");
+            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ResponseMessage.ERROR_INTERNAL_SERVER);
 
             return new UrlResource(filePath.toUri());
         } catch (IOException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ResponseMessage.ERROR_INTERNAL_SERVER);
         }
     }
 
@@ -97,15 +98,15 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void deleteById(String id) {
         try {
-            Image image = imageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "image not found"));
+            Image image = imageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND));
 
             Path filePath = Paths.get(image.getPath());
-            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "image not found");
+            if (!Files.exists(filePath)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, ResponseMessage.ERROR_NOT_FOUND);
 
             imageRepository.deleteById(id);
             Files.delete(filePath);
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ResponseMessage.ERROR_INTERNAL_SERVER);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.TransactionType;
 import com.enigma.wmb_api.dto.response.CommonResponse;
 import com.enigma.wmb_api.dto.response.TransTypeResponse;
@@ -61,7 +62,7 @@ class TransTypeControllerTest {
                 .andDo(result ->  {
                     CommonResponse<TransTypeResponse> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get transaction type", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
     }
 
@@ -91,7 +92,7 @@ class TransTypeControllerTest {
                 .andDo(result -> {
                     CommonResponse<List<TransTypeResponse>> response = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
                     assertEquals(200, response.getStatusCode());
-                    assertEquals("Success get all transaction type", response.getMessage());
+                    assertEquals(ResponseMessage.SUCCESS_GET_DATA, response.getMessage());
                 });
 
     }

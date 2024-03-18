@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.TransactionStatus;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.request.SearchTransactionRequest;
@@ -54,7 +55,7 @@ public class TransactionController {
 
         CommonResponse<TransactionResponse> response = CommonResponse.<TransactionResponse>builder()
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Success create transaction")
+                .message(ResponseMessage.SUCCESS_SAVE_DATA)
                 .data(transactionResult)
                 .build();
 
@@ -104,7 +105,7 @@ public class TransactionController {
 
         CommonResponse<List<TransactionResponse>> response = CommonResponse.<List<TransactionResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get all transactions")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(transactionsResult.getContent())
                 .paging(pagingResponse)
                 .build();
@@ -123,7 +124,7 @@ public class TransactionController {
 
         CommonResponse<TransactionResponse> response = CommonResponse.<TransactionResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get transaction")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(transactionResult)
                 .build();
 
@@ -144,7 +145,7 @@ public class TransactionController {
 
         return ResponseEntity.ok(CommonResponse.builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success update status transaction")
+                .message(ResponseMessage.SUCCESS_UPDATE_DATA)
                 .build());
 
     }

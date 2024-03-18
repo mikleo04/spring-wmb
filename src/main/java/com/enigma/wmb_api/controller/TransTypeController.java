@@ -1,5 +1,6 @@
 package com.enigma.wmb_api.controller;
 
+import com.enigma.wmb_api.constant.ResponseMessage;
 import com.enigma.wmb_api.constant.TransactionType;
 import com.enigma.wmb_api.constant.UrlApi;
 import com.enigma.wmb_api.dto.response.CommonResponse;
@@ -38,7 +39,7 @@ public class TransTypeController {
 
         CommonResponse<TransTypeResponse> response = CommonResponse.<TransTypeResponse>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get transaction type")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(transTypeResult)
                 .build();
 
@@ -53,7 +54,7 @@ public class TransTypeController {
 
         CommonResponse<List<TransTypeResponse>> response = CommonResponse.<List<TransTypeResponse>>builder()
                 .statusCode(HttpStatus.OK.value())
-                .message("Success get all transaction type")
+                .message(ResponseMessage.SUCCESS_GET_DATA)
                 .data(transTypesResult)
                 .build();
 
